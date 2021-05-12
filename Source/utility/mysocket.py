@@ -1,29 +1,17 @@
 import socket as sk
 import struct as stc
 
-
-class MySocket:
-    def __init__(self, sock=None):
+class MySocket(sk.socket):
+    def __init__(self):
         super().__init__()
-        if sock == None:
-            self._reset()
-            self._currentip = 0 
-        else:
-            self._isconnected = True
-            self._sock = sock
-
+        
     def _reset(self):
         self._isconnected = False
         self._sock = sk.socket(sk.AF_INET, sk.SOCK_STREAM)
 
-    def connect(self, ip, port=54321):
-        self._isconnected = True
-        try:
-            self._currentip = ip
-            address = (ip, port)
-            self._sock.connect(address)
-        except:
-            self._reset()
+    def accept(self):
+        con, addr = sk.socket.accept(self)
+        return self.__class__(con), addr
 
     def send(self, msg):
          # Prefix each message with a 4-byte length (network byte order)
@@ -52,14 +40,4 @@ class MySocket:
                 data.extend(packet)
         return data
 
-    def close(self):
-        # Close the socket file descriptor
-        # Both sends and receives are disallowed
-        self._sock.close()
-        self._reset()
 
-    def shutdown(self):
-        # Shutdown one halves of the connection
-        # Further sends are disallowed
-        self._sock.shutdown(sk.SHUT_WR)
-        self._reset()
