@@ -7,7 +7,7 @@ class MySocket:
         super().__init__()
         if sock == None:
             self._reset()
-            self._currentip = 0 
+            self._currentip = 0
         else:
             self._isconnected = True
             self._sock = sock
@@ -26,13 +26,13 @@ class MySocket:
             self._reset()
 
     def send(self, msg):
-         # Prefix each message with a 4-byte length (network byte order)
+        """Prefix each message with a 4-byte length (network byte order)"""
         msg = stc.pack('>I', len(msg)) + msg
         print("> send len: ", len(msg))
         self._sock.sendall(msg)
 
     def receive(self):
-        # Read message length and unpack it into an integer
+        """Read message length and unpack it into an integer"""
         raw_msglen = self.recvall(4)
         if not raw_msglen:
             return None
@@ -40,9 +40,9 @@ class MySocket:
         print("> recv len: ", msglen)
         # Read the message data
         return self.recvall(msglen)
-    
+
     def recvall(self, n):
-        # Helper function to recv n bytes or return None if EOF is hit
+        """Helper function to recv n bytes or return None if EOF is hit"""
         data = bytearray()
         while len(data) < n:
             packet = self._sock.recv(n - len(data))
