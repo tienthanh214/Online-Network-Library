@@ -6,6 +6,11 @@ from signup import Signup
 from connect import Connect
 from search import Search
 from book import Book
+import dialog as box
+
+import sys
+sys.path.insert(0, '../../../utility')
+import mysocket as msk
 
 class RootView(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -18,6 +23,9 @@ class RootView(tk.Tk):
             family='Helvetica', size=10, weight="bold", slant="roman")
         self.user_font = tkfont.Font(
             family='Helvetica', size=14, weight="normal", slant="italic")
+
+        # socket to send and receive data
+        self._socket = msk.MySocket()
 
         # use tkraise to show frame above the other
         self.container = tk.Frame(self)
@@ -38,34 +46,42 @@ class RootView(tk.Tk):
             self.frames[page_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        # for testing only
-        self.show_frame("Search")
-        # self.frames["Search"].show_result([["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["bacon", "True", "", ""]])
+    def run(self):
+        '''Run the UI loop and show the connect page'''
+        self.show_frame("Connect")
+        self.mainloop()
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
         frame = self.frames[page_name]
         frame.tkraise()
 
+    def connect(self):
+        frame = self.frames["Connect"]
+        [ip, port] = frame.get_info()
+        if ip.strip(' ') == "":
+            box.messagebox("Connect", "Enter your username", "warn")
+        if port.strip(' ') == "":
+            box.messagebox("Connect", "Enter your password", "warn")
+        self._socket.connect((ip, int(port)))
+        pass
 
-# class StartPage(tk.Frame):
+    def login(self):
+        frame = self.frames["Login"]
+        pass
 
-#     def __init__(self, parent, controller):
-#         tk.Frame.__init__(self, parent)
-#         self.controller = controller
-#         label = tk.Label(self, text="This is the start page", font=controller.title_font)
-#         label.pack(side="top", fill="x", pady=10)
+    def signup(self):
+        frame = self.frames["Signup"]
+        pass
 
-#         button1 = tk.Button(self, text="Go to Page One",
-#                             command=lambda: controller.show_frame("PageOne"))
-#         button2 = tk.Button(self, text="Go to Page Two",
-#                             command=lambda: controller.show_frame("PageTwo"))
-#         button1.pack()
-#         button2.pack()
+    def search(self):
+        frame = self.frames["Search"]
+        pass
 
-# self.book = Book(tk.Toplevel(self), 'eed', 'frfr')
-# self.book.mainloop()
+    def book(self):
+        pass
+
 
 if __name__ == "__main__":
     app = RootView()
-    app.mainloop()
+    app.run()

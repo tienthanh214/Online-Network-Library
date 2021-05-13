@@ -37,4 +37,4 @@ class Connect(tk.Frame):
     def get_info(self):
         ip = self.txt_ip.get("1.0", tk.END)
         port = self.txt_port.get("1.0", tk.END)
-        return ','.join([ip, port])
+        return [ip, port]
