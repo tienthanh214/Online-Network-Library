@@ -43,17 +43,14 @@ class Search(tk.Frame):
         self.tbl_result = ttk.Treeview(
             self, columns=cols, show="headings", yscrollcommand=self.scb_result.set, selectmode="browse", height=16)
         self.scb_result.config(command=self.tbl_result.yview)
-        self.tbl_result.grid(row=3, column=0, sticky=tk.N,
+        self.tbl_result.grid(row=3, column=0, sticky=tk.E,
                              padx=0, pady=10, columnspan=4)
         for col in cols:
             self.tbl_result.heading(col, text=col)
-            self.tbl_result.column(col, width=160, stretch=True)
-        for i in range(30):
-            self.tbl_result.insert("", "end", values=("_", "_", "_", "_"))
-        self.tbl_result.bind('<Double-1>', self.get_bookid)
+            self.tbl_result.column(col, width=154, stretch=True)
 
         self.btn_clear = tk.Button(
-            self, text="Clear", width=10, height=2, command=self.clear_result)
+            self, text="Clear", width=6, height=1, command=self.clear_result)
         self.btn_clear.grid(row=2, column=4, sticky=tk.E,
                             padx=10, pady=10, columnspan=1)
 

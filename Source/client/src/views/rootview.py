@@ -26,7 +26,7 @@ class RootView(tk.Tk):
         self.container.grid_columnconfigure(0, weight=1)
         self.grid()
 
-        self.username = "Anonymous"
+        self.username = "<N/A>"
 
         self.frames = {}
         for F in (Login, Signup, Connect, Search):
@@ -38,6 +38,7 @@ class RootView(tk.Tk):
             # will be the one that is visible.
             frame.grid(row=0, column=0, sticky="nsew")
 
+        # for testing only
         self.show_frame("Search")
         self.frames["Search"].show_result([["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["bacon", "True", "", ""]])
 
