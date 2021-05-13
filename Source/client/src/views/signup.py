@@ -44,4 +44,5 @@ class Signup(tk.Frame):
     def get_info(self):
         usr = self.txt_username.get("1.0", tk.END)
         pas = self.txt_password.get("1.0", tk.END)
-        return ','.join([usr, pas])
+        num = self.txt_phone.get("1.0", tk.END)
+        return usr, pas, num

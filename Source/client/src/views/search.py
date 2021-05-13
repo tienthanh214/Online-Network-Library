@@ -48,6 +48,8 @@ class Search(tk.Frame):
         for col in cols:
             self.tbl_result.heading(col, text=col)
             self.tbl_result.column(col, width=164, stretch=True)
+        self.tbl_result.tag_configure('0', background='#E8E8E8')
+        self.tbl_result.tag_configure('1', background='#DFDFDF')
 
         self.btn_clear = tk.Button(
             self, text="Clear", width=6, height=1, command=self.clear_result)
@@ -58,7 +60,7 @@ class Search(tk.Frame):
         self.clear_result()
         for items in table:
             row = (items[0], items[1], items[2], items[3])
-            self.tbl_result.insert("", "end", values=row)
+            self.tbl_result.insert("", "end", values=row, tags=(str(items.__index__ % 2)))
 
     def clear_result(self):
         for rowid in self.tbl_result.get_children():

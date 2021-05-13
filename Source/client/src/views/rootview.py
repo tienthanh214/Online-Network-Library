@@ -25,6 +25,7 @@ class RootView(tk.Tk):
             family='Helvetica', size=14, weight="normal", slant="italic")
 
         # socket to send and receive data
+        # !!!!!!! MySocket is imcomplete
         self._socket = msk.MySocket()
 
         # use tkraise to show frame above the other
@@ -53,33 +54,78 @@ class RootView(tk.Tk):
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
-        frame = self.frames[page_name]
-        frame.tkraise()
+        self.frame = self.frames[page_name]
+        self.frame.tkraise()
 
     def connect(self):
-        frame = self.frames["Connect"]
-        [ip, port] = frame.get_info()
+        '''Connect to the library server'''
+        ip, port = frame.get_info()
+
         if ip.strip(' ') == "":
-            box.messagebox("Connect", "Enter your username", "warn")
+            box.messagebox("Connect", "Please enter an IP address", "warn")
         if port.strip(' ') == "":
-            box.messagebox("Connect", "Enter your password", "warn")
-        self._socket.connect((ip, int(port)))
-        pass
+            box.messagebox("Connect", "Please enter a port number", "warn")
+
+        try:
+            self._socket.connect((ip, int(port)))
+        except:
+            box.messagebox("Connect", "Unable to connect", "error")
 
     def login(self):
-        frame = self.frames["Login"]
-        pass
+        '''Send name and password to the server for authentication'''
+        usr, pas = self.frame.get_info()
+
+        if usr.strip(' ') == "":
+            box.messagebox("Connect", "Please enter your username", "warn")
+        if pas.strip(' ') == "":
+            box.messagebox("Connect", "Please enter your password", "warn")
+
+        try:
+            self._socket.send(bytes(','.join(["login", usr, pas]), "utf8"))
+            response = self._socket.receive().decode("utf8")
+            # do something
+        except:
+            box.messagebox("Connect", "Unable to send request", "error")
 
     def signup(self):
-        frame = self.frames["Signup"]
+        '''Create new account if it is not yet existed'''
+        usr, pas, num = self.frame.get_info()
+
+        if usr.strip(' ') == "":
+            box.messagebox("Connect", "Please enter your username", "warn")
+        if pas.strip(' ') == "":
+            box.messagebox("Connect", "Please enter your password", "warn")
+        if num.strip(' ') == "":
+            box.messagebox("Connect", "Please enter your phone number", "warn")
+
+        try:
+            self._socket.send(bytes(','.join(["signup", usr, pas, num]), "utf8"))
+            response = self._socket.receive().decode("utf8")
+            # do something
+        except:
+            box.messagebox("Connect", "Unable to send request", "error")
         pass
 
     def search(self):
-        frame = self.frames["Search"]
+        '''Send the search query to the server'''
+        query = self.frame.get_query()
+        try:
+            self._socket.send(bytes(','.join(query.split(' ', 1))), "utf8")
+            response = self._socket.receive().decode("utf8")
+            # do something
+        except:
+            box.messagebox("Connect", "Unable to send request", "error")
         pass
 
-    def book(self):
-        pass
+    def book(self, bookid):
+        '''Display book title and content in a seperate window'''
+        try:
+            self._socket.send(bytes(','.join(["book", bookid]), "utf8"))
+            response = self._socket.receive().decode("utf8")
+            Book(tk.Tk(), *response.split(',', 3))
+            # do something
+        except:
+            box.messagebox("View book", "Unable to retrieve book", "error")
 
 
 if __name__ == "__main__":
