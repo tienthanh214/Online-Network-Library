@@ -2,12 +2,19 @@ import socket as sk
 import struct as stc
 
 class MySocket(sk.socket):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super(MySocket, self).__init__(*args, **kwargs)
+    
+    @classmethod
+    def copy(cls, sock):
+        fd = sk.dup(sock.fileno())
+        copy = cls(sock.family, sock.type, sock.proto, fileno = fd)
+        copy.settimeout(sock.gettimeout())
+        return copy
 
     def accept(self):
         con, addr = sk.socket.accept(self)
-        return self.__class__(con), addr
+        return MySocket.copy(con), addr
 
     def send(self, msg):
         """Prefix each message with a 4-byte length (network byte order)"""
