@@ -9,7 +9,7 @@ class Connect(tk.Frame):
 
     def create_widgets(self):
         self.lbl_ip = tk.Label(
-            self, height=1, text="IP address:", width=20, justify="left")
+            self, height=1, text="IP address:", width=20, justify="left", font=self.controller.label_font, anchor=tk.E)
         self.lbl_ip.grid(row=0, column=0, sticky=tk.W +
                          tk.S+tk.E+tk.N,
                          padx=10, pady=0, columnspan=1)
@@ -19,7 +19,7 @@ class Connect(tk.Frame):
                          padx=10, pady=10, columnspan=3)
         
         self.lbl_port = tk.Label(
-            self, height=1, text="Port number:", width=20, justify="left")
+            self, height=1, text="Port number:", width=20, justify="left", font=self.controller.label_font, anchor=tk.E)
         self.lbl_port.grid(row=1, column=0, sticky=tk.W +
                            tk.S+tk.E+tk.N,
                            padx=10, pady=0, columnspan=1)

@@ -30,9 +30,7 @@ class Book(tk.Frame):
                             padx=10, pady=10, columnspan=1)
 
     def download_book(self):
-        files = [('PNG', '*.png'),
-                 ('JPEG', '*.jpg;*.jpeg'),
-                 ('Bitmap', '*.bmp')]
+        files = [('Text Document', '*.txt'),]
         file = filedialog.asksaveasfile(
             mode="wb", initialfile=self._title, filetypes=files, defaultextension=files, title="Save Book")
         if file != None:

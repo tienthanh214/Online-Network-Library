@@ -11,12 +11,15 @@ class RootView(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
+        # predefined fonts for UI consistency
         self.title_font = tkfont.Font(
-            family='Helvetica', size=18, weight="bold", slant="italic")
+            family='Helvetica', size=12, weight="bold", slant="roman")
+        self.label_font = tkfont.Font(
+            family='Helvetica', size=10, weight="bold", slant="roman")
+        self.user_font = tkfont.Font(
+            family='Helvetica', size=14, weight="normal", slant="italic")
 
-        # the container is where we'll stack a bunch of frames
-        # on top of each other, then the one we want visible
-        # will be raised above the others
+        # use tkraise to show frame above the other
         self.container = tk.Frame(self)
         self.geometry("768x560+50+50")
         self.title("Online Library")
@@ -33,14 +36,11 @@ class RootView(tk.Tk):
             page_name = F.__name__
             frame = F(parent=self.container, controller=self)
             self.frames[page_name] = frame
-            # put all of the pages in the same location;
-            # the one on the top of the stacking order
-            # will be the one that is visible.
             frame.grid(row=0, column=0, sticky="nsew")
 
         # for testing only
         self.show_frame("Search")
-        self.frames["Search"].show_result([["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["bacon", "True", "", ""]])
+        # self.frames["Search"].show_result([["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["spam", 42, "test", ""],["eggs", 451, "", "we"],["bacon", "True", "", ""]])
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
