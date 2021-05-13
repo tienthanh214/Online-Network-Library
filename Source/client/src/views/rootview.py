@@ -1,5 +1,7 @@
+import mysocket as msk
 import tkinter as tk
 from tkinter import font as tkfont
+from socket import AF_INET, SOCK_STREAM
 
 from login import Login
 from signup import Signup
@@ -10,7 +12,7 @@ import dialog as box
 
 import sys
 sys.path.insert(0, '../../../utility')
-import mysocket as msk
+
 
 class RootView(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -26,7 +28,7 @@ class RootView(tk.Tk):
 
         # socket to send and receive data
         # !!!!!!! MySocket is imcomplete
-        self._socket = msk.MySocket()
+        self._socket = msk.MySocket(AF_INET, SOCK_STREAM)
 
         # use tkraise to show frame above the other
         self.container = tk.Frame(self)
@@ -75,6 +77,7 @@ class RootView(tk.Tk):
 
         try:
             self._socket.connect((ip, int(port)))
+            box.messagebox("Connect", "Connected to the library", "info")
         except:
             box.messagebox("Connect", "Unable to connect", "error")
 
@@ -92,28 +95,40 @@ class RootView(tk.Tk):
         try:
             self._socket.send(bytes(','.join(["login", usr, pas]), "utf8"))
             response = self._socket.receive().decode("utf8")
-            # do something
+
+            if response == "success":
+                box.messagebox("Log in", "Welcome " + usr, "info")
+                self.username = usr
+                self.show_frame("Search")
+            else:
+                box.messagebox("Log in", response, "warn")
         except:
-            box.messagebox("Connect", "Unable to send request", "error")
+            box.messagebox("Log in", "Unable to send request", "error")
 
     def signup(self):
         '''Create new account if it is not yet existed'''
         usr, pas, num = self.frame.get_info()
 
         if usr.strip(' ') == "":
-            box.messagebox("Connect", "Please enter your username", "warn")
+            box.messagebox("Sign up", "Please enter your username", "warn")
             return
         if pas.strip(' ') == "":
-            box.messagebox("Connect", "Please enter your password", "warn")
+            box.messagebox("Sign up", "Please enter your password", "warn")
             return
         if num.strip(' ') == "":
-            box.messagebox("Connect", "Please enter your phone number", "warn")
+            box.messagebox("Sign up", "Please enter your phone number", "warn")
             return
 
         try:
-            self._socket.send(bytes(','.join(["signup", usr, pas, num]), "utf8"))
+            self._socket.send(
+                bytes(','.join(["signup", usr, pas, num]), "utf8"))
             response = self._socket.receive().decode("utf8")
-            # do something
+
+            if response == "success":
+                box.messagebox(
+                    "Log in", "Account created, please go\nback to log in page", "info")
+            else:
+                box.messagebox("Log in", response, "warn")
         except:
             box.messagebox("Connect", "Unable to send request", "error")
         pass
@@ -126,6 +141,7 @@ class RootView(tk.Tk):
             self._socket.send(bytes(query), "utf8")
             response = self._socket.receive().decode("utf8")
             # do something
+            self.frame.show_result(to_matrix(response))
         except:
             box.messagebox("Connect", "Unable to send request", "error")
         pass
@@ -137,13 +153,14 @@ class RootView(tk.Tk):
         try:
             self._socket.send(bytes(','.join(["book", bookid]), "utf8"))
             response = self._socket.receive().decode("utf8")
-            Book(tk.Tk(), *response.split(',', 3))
+            Book(tk.Tk(), *response.split('\n', 1))
             # do something
         except:
             box.messagebox("View book", "Unable to retrieve book", "error")
 
     def logout(self):
         '''Erase info and return to login screen'''
+        self._socket.send(bytes("LOGOUT"), "utf8")
         self.username = "<N/A>"
         self.show_frame("Login")
 
