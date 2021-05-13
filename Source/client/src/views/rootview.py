@@ -54,8 +54,13 @@ class RootView(tk.Tk):
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
-        self.frame = self.frames[page_name]
-        self.frame.tkraise()
+        try:
+            self._socket.send(bytes(page_name.upper()), "utf8")
+        except:
+            pass
+        finally:
+            self.frame = self.frames[page_name]
+            self.frame.tkraise()
 
     def connect(self):
         '''Connect to the library server'''
@@ -63,8 +68,10 @@ class RootView(tk.Tk):
 
         if ip.strip(' ') == "":
             box.messagebox("Connect", "Please enter an IP address", "warn")
+            return
         if port.strip(' ') == "":
             box.messagebox("Connect", "Please enter a port number", "warn")
+            return
 
         try:
             self._socket.connect((ip, int(port)))
@@ -77,8 +84,10 @@ class RootView(tk.Tk):
 
         if usr.strip(' ') == "":
             box.messagebox("Connect", "Please enter your username", "warn")
+            return
         if pas.strip(' ') == "":
             box.messagebox("Connect", "Please enter your password", "warn")
+            return
 
         try:
             self._socket.send(bytes(','.join(["login", usr, pas]), "utf8"))
@@ -93,10 +102,13 @@ class RootView(tk.Tk):
 
         if usr.strip(' ') == "":
             box.messagebox("Connect", "Please enter your username", "warn")
+            return
         if pas.strip(' ') == "":
             box.messagebox("Connect", "Please enter your password", "warn")
+            return
         if num.strip(' ') == "":
             box.messagebox("Connect", "Please enter your phone number", "warn")
+            return
 
         try:
             self._socket.send(bytes(','.join(["signup", usr, pas, num]), "utf8"))
@@ -109,16 +121,19 @@ class RootView(tk.Tk):
     def search(self):
         '''Send the search query to the server'''
         query = self.frame.get_query()
+
         try:
-            self._socket.send(bytes(','.join(query.split(' ', 1))), "utf8")
+            self._socket.send(bytes(query), "utf8")
             response = self._socket.receive().decode("utf8")
             # do something
         except:
             box.messagebox("Connect", "Unable to send request", "error")
         pass
 
-    def book(self, bookid):
+    def book(self):
         '''Display book title and content in a seperate window'''
+        bookid = self.frame.get_bookid()
+
         try:
             self._socket.send(bytes(','.join(["book", bookid]), "utf8"))
             response = self._socket.receive().decode("utf8")
@@ -126,6 +141,11 @@ class RootView(tk.Tk):
             # do something
         except:
             box.messagebox("View book", "Unable to retrieve book", "error")
+
+    def logout(self):
+        '''Erase info and return to login screen'''
+        self.username = "<N/A>"
+        self.show_frame("Login")
 
 
 if __name__ == "__main__":
