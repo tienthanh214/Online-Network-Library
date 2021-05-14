@@ -44,7 +44,9 @@ class RootView(tk.Tk):
             self.frames[page_name] = instance
 
     def bind_action(self):
-        '''Bind button with action'''
+        '''Bind button with actions'''
+        self.bind("<Destroy>", lambda e:self.quit_prog())
+
         self.frames["Connect"].btn_connect["command"] = self.connect
 
         self.frames["Login"].btn_login["command"] = self.login
@@ -62,15 +64,13 @@ class RootView(tk.Tk):
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
-        self.frame = self.frames[page_name]
-        self.frame.tkraise()
-        # try:
-        #     self._socket.send(bytes(page_name.upper()), "utf8")
-        # except:
-        #     pass
-        # finally:
-        #     self.frame = self.frames[page_name]
-        #     self.frame.tkraise()
+        try:
+            if not page_name == "Connect":
+                self._socket.send(bytes(page_name.upper()), "utf8")
+            self.frame = self.frames[page_name]
+            self.frame.tkraise()
+        except:
+            messagebox("Lost connection", "Cannot contact to the server", "error")
 
     def connect(self):
         '''Connect to the library server'''
@@ -171,11 +171,14 @@ class RootView(tk.Tk):
     def logout(self):
         '''Erase info and return to login screen'''
         self._socket.send(bytes("LOGOUT"), "utf8")
+        self.frames["Search"].clear_result()
         self.username = "<N/A>"
         self.show_frame("Login")
 
+    def quit_prog(self):
+        '''Close the window and shut down program'''
+        self._socket.send(bytes("QUIT"), "utf8")
+        self._socket.close()
 
-if __name__ == "__main__":
-    app = RootView()
-    app.run()
-    Book(tk.Tk(), *"sbfierfherhfr\tadgsdbcusbfuguefgue".split('\t', 1))
+    def to_matrix(self):
+        pass
