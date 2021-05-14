@@ -19,7 +19,7 @@ class MySocket(sk.socket):
     def send(self, msg):
         """Prefix each message with a 4-byte length (network byte order)"""
         msg = stc.pack('>I', len(msg)) + msg
-        print("> send len: ", len(msg))
+        print("> send msg: ", msg)
         self.sendall(msg)
 
     def receive(self):

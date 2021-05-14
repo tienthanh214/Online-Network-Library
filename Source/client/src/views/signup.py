@@ -9,14 +9,6 @@ class Signup(tk.Frame):
     def create_widgets(self):
         import textstyles as style
 
-        self.lbl_phone = tk.Label(
-            self, height=1, text="Phone Number:", width=20, justify="left", font=style.label_font, anchor=tk.E)
-        self.lbl_phone.grid(row=0, column=0, sticky=tk.E,
-                            padx=10, pady=0, columnspan=1)
-        self.txt_phone = tk.Text(self, width=48, height=1, bg="#FFFFFF")
-        self.txt_phone.grid(row=0, column=1, sticky=tk.W,
-                            padx=10, pady=10, columnspan=3)
-
         self.lbl_username = tk.Label(
             self, height=1, text="Username:", width=20, justify="left", font=style.label_font, anchor=tk.E)
         self.lbl_username.grid(row=1, column=0, sticky=tk.E,
@@ -45,5 +37,4 @@ class Signup(tk.Frame):
     def get_info(self):
         usr = self.txt_username.get("1.0", tk.END).strip('\n')
         pas = self.txt_password.get("1.0", tk.END).strip('\n')
-        num = self.txt_phone.get("1.0", tk.END).strip('\n')
-        return usr, pas, num
+        return usr, pas

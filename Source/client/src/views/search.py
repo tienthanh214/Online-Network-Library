@@ -30,17 +30,17 @@ class Search(tk.Frame):
         self.scb_result = tk.Scrollbar(self, orient=tk.VERTICAL)
         self.scb_result.grid(
             row=3, column=5, sticky=tk.N+tk.S+tk.W, columnspan=1)
-        cols = ("ID", "Title", "Author", "Type")
+        cols = ("ID", "Title", "Author", "Published date", "Type")
         self.tbl_result = ttk.Treeview(
             self, columns=cols, show="headings", yscrollcommand=self.scb_result.set, selectmode="browse", height=12)
         self.scb_result.config(command=self.tbl_result.yview)
         self.tbl_result.grid(row=3, column=0, sticky=tk.E,
                              padx=0, pady=10, columnspan=5)
+
         for col in cols:
             self.tbl_result.heading(col, text=col)
-            self.tbl_result.column(col, width=164, stretch=True)
-        self.tbl_result.tag_configure('0', background='#E8E8E8')
-        self.tbl_result.tag_configure('1', background='#DFDFDF')
+            self.tbl_result.column(col, width=160, stretch=True)
+        self.tbl_result.column("ID", width=80, stretch=True)
 
         self.btn_clear = tk.Button(
             self, text="Clear", width=6, height=1, command=self.clear_result)
@@ -50,8 +50,7 @@ class Search(tk.Frame):
     def show_result(self, table):
         self.clear_result()
         for row in table:
-            self.tbl_result.insert("", "end", values=row,
-                                   tags=(str(row.__index__() % 2)))
+            self.tbl_result.insert("", "end", values=row)
 
     def clear_result(self):
         for rowid in self.tbl_result.get_children():
@@ -63,6 +62,6 @@ class Search(tk.Frame):
     def get_query(self):
         return self.txt_query.get("1.0", tk.END).strip('\n')
 
-    def get_bookid(self, event):
+    def get_bookid(self):
         curItem = self.tbl_result.focus()
         return self.tbl_result.item(curItem)['values'][0].strip('\n')
