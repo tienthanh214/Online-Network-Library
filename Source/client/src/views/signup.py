@@ -2,14 +2,15 @@ import tkinter as tk
 
 
 class Signup(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
         self.create_widgets()
 
     def create_widgets(self):
+        import textstyles as style
+
         self.lbl_phone = tk.Label(
-            self, height=1, text="Phone Number:", width=20, justify="left", font=self.controller.label_font, anchor=tk.E)
+            self, height=1, text="Phone Number:", width=20, justify="left", font=style.label_font, anchor=tk.E)
         self.lbl_phone.grid(row=0, column=0, sticky=tk.E,
                             padx=10, pady=0, columnspan=1)
         self.txt_phone = tk.Text(self, width=48, height=1, bg="#FFFFFF")
@@ -17,7 +18,7 @@ class Signup(tk.Frame):
                             padx=10, pady=10, columnspan=3)
 
         self.lbl_username = tk.Label(
-            self, height=1, text="Username:", width=20, justify="left", font=self.controller.label_font, anchor=tk.E)
+            self, height=1, text="Username:", width=20, justify="left", font=style.label_font, anchor=tk.E)
         self.lbl_username.grid(row=1, column=0, sticky=tk.E,
                                padx=10, pady=0, columnspan=1)
         self.txt_username = tk.Text(self, width=48, height=1, bg="#FFFFFF")
@@ -25,7 +26,7 @@ class Signup(tk.Frame):
                                padx=10, pady=10, columnspan=3)
 
         self.lbl_password = tk.Label(
-            self, height=1, text="Password:", width=20, justify="left", font=self.controller.label_font, anchor=tk.E)
+            self, height=1, text="Password:", width=20, justify="left", font=style.label_font, anchor=tk.E)
         self.lbl_password.grid(row=2, column=0, sticky=tk.E,
                                padx=10, pady=0, columnspan=1)
         self.txt_password = tk.Text(self, width=48, height=1, bg="#FFFFFF")
@@ -42,7 +43,7 @@ class Signup(tk.Frame):
                              padx=10, pady=10, columnspan=1)
 
     def get_info(self):
-        usr = self.txt_username.get("1.0", tk.END)
-        pas = self.txt_password.get("1.0", tk.END)
-        num = self.txt_phone.get("1.0", tk.END)
+        usr = self.txt_username.get("1.0", tk.END).strip('\n')
+        pas = self.txt_password.get("1.0", tk.END).strip('\n')
+        num = self.txt_phone.get("1.0", tk.END).strip('\n')
         return usr, pas, num

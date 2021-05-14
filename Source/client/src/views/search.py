@@ -3,15 +3,16 @@ from tkinter import ttk
 
 
 class Search(tk.Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        self.controller = controller
-        self._user = controller.username
+        self._user = "ded"
         self.create_widgets()
 
     def create_widgets(self):
+        import textstyles as style
+
         self.lbl_user = tk.Label(
-            self, height=1, text=self._user, width=20, justify="right", font=self.controller.user_font, anchor=tk.E)
+            self, height=1, text=self._user, width=20, justify="right", font=style.user_font, anchor=tk.E)
         self.lbl_user.grid(row=0, column=2, sticky=tk.E,
                            padx=0, pady=10, columnspan=2)
         self.btn_logout = tk.Button(
@@ -20,7 +21,7 @@ class Search(tk.Frame):
                              padx=10, pady=10, columnspan=1)
 
         self.lbl_query = tk.Label(
-            self, height=1, text="Query:", width=15, justify="left", anchor=tk.E, font=self.controller.label_font)
+            self, height=1, text="Query:", width=15, justify="left", anchor=tk.E, font=style.label_font)
         self.lbl_query.grid(row=1, column=0, sticky=tk.W,
                             padx=10, pady=0, columnspan=1)
         self.txt_query = tk.Text(self, width=56, height=1, bg="#FFFFFF")
@@ -33,7 +34,7 @@ class Search(tk.Frame):
                              padx=10, pady=10, columnspan=1)
 
         self.lbl_result = tk.Label(
-            self, height=1, text="~" * 12 + " Result " + "~" * 12, width=30, font=self.controller.label_font)
+            self, height=1, text="~" * 12 + " Result " + "~" * 12, width=30, font=style.label_font)
         self.lbl_result.grid(row=2, column=1, sticky=tk.W + tk.E,
                              padx=10, pady=0, columnspan=3)
         self.scb_result = tk.Scrollbar(self, orient=tk.VERTICAL)
@@ -60,15 +61,16 @@ class Search(tk.Frame):
         self.clear_result()
         for items in table:
             row = (items[0], items[1], items[2], items[3])
-            self.tbl_result.insert("", "end", values=row, tags=(str(items.__index__ % 2)))
+            self.tbl_result.insert("", "end", values=row,
+                                   tags=(str(items.__index__ % 2)))
 
     def clear_result(self):
         for rowid in self.tbl_result.get_children():
             self.tbl_result.delete(rowid)
 
     def get_query(self):
-        return self.txt_query.get("1.0", tk.END)
+        return self.txt_query.get("1.0", tk.END).strip('\n')
 
     def get_bookid(self, event):
         curItem = self.tbl_result.focus()
-        return self.tbl_result.item(curItem)['values'][0]
+        return self.tbl_result.item(curItem)['values'][0].strip('\n')

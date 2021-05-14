@@ -1,15 +1,14 @@
 import socket as sk
 import struct as stc
 
-
 class MySocket(sk.socket):
     def __init__(self, *args, **kwargs):
         super(MySocket, self).__init__(*args, **kwargs)
-
+    
     @classmethod
     def copy(cls, sock):
         fd = sk.dup(sock.fileno())
-        copy = cls(sock.family, sock.type, sock.proto, fileno=fd)
+        copy = cls(sock.family, sock.type, sock.proto, fileno = fd)
         copy.settimeout(sock.gettimeout())
         return copy
 
@@ -20,7 +19,7 @@ class MySocket(sk.socket):
     def send(self, msg):
         """Prefix each message with a 4-byte length (network byte order)"""
         msg = stc.pack('>I', len(msg)) + msg
-        print("> send: ", msg)
+        print("> send len: ", len(msg))
         self.sendall(msg)
 
     def receive(self):

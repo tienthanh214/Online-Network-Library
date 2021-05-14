@@ -1,36 +1,22 @@
-import mysocket as msk
 import tkinter as tk
-from tkinter import font as tkfont
-from socket import AF_INET, SOCK_STREAM
 
+from socket import AF_INET, SOCK_STREAM
 from login import Login
 from signup import Signup
 from connect import Connect
 from search import Search
 from book import Book
-import dialog as box
-
-import sys
-sys.path.insert(0, '../../../utility')
+from mysocket import MySocket
+from dialog import messagebox
 
 
 class RootView(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
-        # predefined fonts for UI consistency
-        self.title_font = tkfont.Font(
-            family='Helvetica', size=12, weight="bold", slant="roman")
-        self.label_font = tkfont.Font(
-            family='Helvetica', size=10, weight="bold", slant="roman")
-        self.user_font = tkfont.Font(
-            family='Helvetica', size=14, weight="normal", slant="italic")
+        self._socket = MySocket(AF_INET, SOCK_STREAM)
+        self.username = "<N/A>"
 
-        # socket to send and receive data
-        # !!!!!!! MySocket is imcomplete
-        self._socket = msk.MySocket(AF_INET, SOCK_STREAM)
-
-        # use tkraise to show frame above the other
         self.container = tk.Frame(self)
         self.geometry("768x560+50+50")
         self.title("Online Library")
@@ -40,97 +26,121 @@ class RootView(tk.Tk):
         self.container.grid_columnconfigure(0, weight=1)
         self.grid()
 
-        self.username = "<N/A>"
-
         self.frames = {}
-        for F in (Login, Signup, Connect, Search):
-            page_name = F.__name__
-            frame = F(parent=self.container, controller=self)
-            self.frames[page_name] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
+        self.create_frames()
+        self.bind_action()
 
     def run(self):
         '''Run the UI loop and show the connect page'''
         self.show_frame("Connect")
         self.mainloop()
 
+    def create_frames(self):
+        '''Init instances of frames and store in a map'''
+        for frame in (Login, Signup, Connect, Search):
+            page_name = frame.__name__
+            instance = frame(parent=self.container)
+            instance.grid(row=0, column=0, sticky="nsew")
+            self.frames[page_name] = instance
+
+    def bind_action(self):
+        '''Bind button with action'''
+        self.frames["Connect"].btn_connect["command"] = self.connect
+
+        self.frames["Login"].btn_login["command"] = self.login
+        self.frames["Login"].btn_signup["command"] = lambda: self.show_frame(
+            "Signup")
+
+        self.frames["Signup"].btn_signup["command"] = lambda: self.signup
+        self.frames["Signup"].btn_back["command"] = lambda: self.show_frame(
+            "Login")
+
+        self.frames["Search"].btn_search["command"] = self.search
+        self.frames["Search"].btn_logout["command"] = self.logout
+        self.frames["Search"].tbl_result.bind(
+            "<Double-1>", lambda e: self.book())
+
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
-        try:
-            self._socket.send(bytes(page_name.upper()), "utf8")
-        except:
-            pass
-        finally:
-            self.frame = self.frames[page_name]
-            self.frame.tkraise()
+        self.frame = self.frames[page_name]
+        self.frame.tkraise()
+        # try:
+        #     self._socket.send(bytes(page_name.upper()), "utf8")
+        # except:
+        #     pass
+        # finally:
+        #     self.frame = self.frames[page_name]
+        #     self.frame.tkraise()
 
     def connect(self):
         '''Connect to the library server'''
-        ip, port = frame.get_info()
+        ip, port = self.frame.get_info()
 
         if ip.strip(' ') == "":
-            box.messagebox("Connect", "Please enter an IP address", "warn")
+            messagebox("Invalid input", "Please enter an IP address", "warn")
             return
         if port.strip(' ') == "":
-            box.messagebox("Connect", "Please enter a port number", "warn")
+            messagebox("Invalid input", "Please enter a port number", "warn")
             return
 
         try:
             self._socket.connect((ip, int(port)))
-            box.messagebox("Connect", "Connected to the library", "info")
+            messagebox("Accepted", "Connected to the library", "info")
         except:
-            box.messagebox("Connect", "Unable to connect", "error")
+            messagebox("Failed", "Unable to connect, please try again", "error")
 
     def login(self):
         '''Send name and password to the server for authentication'''
         usr, pas = self.frame.get_info()
 
         if usr.strip(' ') == "":
-            box.messagebox("Connect", "Please enter your username", "warn")
+            messagebox("Invalid input", "Please enter your username", "warn")
             return
         if pas.strip(' ') == "":
-            box.messagebox("Connect", "Please enter your password", "warn")
+            messagebox("Invalid input", "Please enter your password", "warn")
             return
 
         try:
-            self._socket.send(bytes(','.join(["login", usr, pas]), "utf8"))
+            self._socket.send(bytes('\t'.join([usr, pas]), "utf8"))
             response = self._socket.receive().decode("utf8")
 
-            if response == "success":
-                box.messagebox("Log in", "Welcome " + usr, "info")
+            if response == "SUCCESS":
+                messagebox("Log in successful", "Welcome, " + usr, "info")
                 self.username = usr
                 self.show_frame("Search")
             else:
-                box.messagebox("Log in", response, "warn")
+                errmsg = response.split(' ', 1)[1]
+                messagebox("Log in failed", errmsg, "warn")
         except:
-            box.messagebox("Log in", "Unable to send request", "error")
+            messagebox("Log in", "Unable to send request", "error")
 
     def signup(self):
         '''Create new account if it is not yet existed'''
         usr, pas, num = self.frame.get_info()
 
         if usr.strip(' ') == "":
-            box.messagebox("Sign up", "Please enter your username", "warn")
+            messagebox("Invalid input", "Please enter your username", "warn")
             return
         if pas.strip(' ') == "":
-            box.messagebox("Sign up", "Please enter your password", "warn")
+            messagebox("Invalid input", "Please enter your password", "warn")
             return
         if num.strip(' ') == "":
-            box.messagebox("Sign up", "Please enter your phone number", "warn")
+            messagebox("Invalid input",
+                       "Please enter your phone number", "warn")
             return
 
         try:
-            self._socket.send(
-                bytes(','.join(["signup", usr, pas, num]), "utf8"))
+            self._socket.send(bytes('\t'.join([usr, pas]), "utf8"))
             response = self._socket.receive().decode("utf8")
 
-            if response == "success":
-                box.messagebox(
-                    "Log in", "Account created, please go\nback to log in page", "info")
+            if response == "SUCCESS":
+                messagebox(
+                    "Sign up successful", "Account created, please go\nback to log in page", "info")
             else:
-                box.messagebox("Log in", response, "warn")
+                errmsg = response.split(' ', 1)[1]
+                messagebox("Sign up failed", errmsg, "warn")
         except:
-            box.messagebox("Connect", "Unable to send request", "error")
+            messagebox("Connect", "Unable to send request", "error")
         pass
 
     def search(self):
@@ -143,7 +153,7 @@ class RootView(tk.Tk):
             # do something
             self.frame.show_result(to_matrix(response))
         except:
-            box.messagebox("Connect", "Unable to send request", "error")
+            messagebox("Connect", "Unable to send request", "error")
         pass
 
     def book(self):
@@ -151,12 +161,12 @@ class RootView(tk.Tk):
         bookid = self.frame.get_bookid()
 
         try:
-            self._socket.send(bytes(','.join(["book", bookid]), "utf8"))
+            self._socket.send(bytes(','.join(["get", bookid]), "utf8"))
             response = self._socket.receive().decode("utf8")
-            Book(tk.Tk(), *response.split('\n', 1))
+            Book(tk.Tk(), *response.split('\t', 1))
             # do something
         except:
-            box.messagebox("View book", "Unable to retrieve book", "error")
+            messagebox("View book", "Unable to retrieve book", "error")
 
     def logout(self):
         '''Erase info and return to login screen'''
@@ -168,3 +178,4 @@ class RootView(tk.Tk):
 if __name__ == "__main__":
     app = RootView()
     app.run()
+    Book(tk.Tk(), *"sbfierfherhfr\tadgsdbcusbfuguefgue".split('\t', 1))
