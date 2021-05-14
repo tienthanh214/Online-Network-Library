@@ -5,20 +5,10 @@ from tkinter import ttk
 class Search(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        self._user = "ded"
         self.create_widgets()
 
     def create_widgets(self):
         import textstyles as style
-
-        self.lbl_user = tk.Label(
-            self, height=1, text=self._user, width=20, justify="right", font=style.user_font, anchor=tk.E)
-        self.lbl_user.grid(row=0, column=2, sticky=tk.E,
-                           padx=0, pady=10, columnspan=2)
-        self.btn_logout = tk.Button(
-            self, text="Log out", width=10, height=1)
-        self.btn_logout.grid(row=0, column=4, sticky=tk.E,
-                             padx=10, pady=10, columnspan=1)
 
         self.lbl_query = tk.Label(
             self, height=1, text="Query:", width=15, justify="left", anchor=tk.E, font=style.label_font)
@@ -59,14 +49,16 @@ class Search(tk.Frame):
 
     def show_result(self, table):
         self.clear_result()
-        for items in table:
-            row = (items[0], items[1], items[2], items[3])
+        for row in table:
             self.tbl_result.insert("", "end", values=row,
-                                   tags=(str(items.__index__ % 2)))
+                                   tags=(str(row.__index__() % 2)))
 
     def clear_result(self):
         for rowid in self.tbl_result.get_children():
             self.tbl_result.delete(rowid)
+
+    def clear_query(self):
+        self.txt_query.delete("1.0", tk.END)
 
     def get_query(self):
         return self.txt_query.get("1.0", tk.END).strip('\n')

@@ -1,4 +1,5 @@
 import tkinter as tk
+import pickle
 
 from socket import AF_INET, SOCK_STREAM
 from login import Login
@@ -45,7 +46,7 @@ class RootView(tk.Tk):
 
     def bind_action(self):
         '''Bind button with actions'''
-        self.bind("<Destroy>", lambda e:self.quit_prog())
+        self.bind("<Destroy>", lambda e: self.quit_prog())
 
         self.frames["Connect"].btn_connect["command"] = self.connect
 
@@ -70,7 +71,8 @@ class RootView(tk.Tk):
             self.frame = self.frames[page_name]
             self.frame.tkraise()
         except:
-            messagebox("Lost connection", "Cannot contact to the server", "error")
+            messagebox("Lost connection",
+                       "Cannot contact to the server", "error")
 
     def connect(self):
         '''Connect to the library server'''
@@ -151,7 +153,7 @@ class RootView(tk.Tk):
             self._socket.send(bytes(query), "utf8")
             response = self._socket.receive().decode("utf8")
             # do something
-            self.frame.show_result(to_matrix(response))
+            self.frame.show_result(pickle.load(response))
         except:
             messagebox("Connect", "Unable to send request", "error")
         pass
@@ -172,6 +174,7 @@ class RootView(tk.Tk):
         '''Erase info and return to login screen'''
         self._socket.send(bytes("LOGOUT"), "utf8")
         self.frames["Search"].clear_result()
+        self.frames["Search"].clear_query()
         self.username = "<N/A>"
         self.show_frame("Login")
 
@@ -179,6 +182,3 @@ class RootView(tk.Tk):
         '''Close the window and shut down program'''
         self._socket.send(bytes("QUIT"), "utf8")
         self._socket.close()
-
-    def to_matrix(self):
-        pass
