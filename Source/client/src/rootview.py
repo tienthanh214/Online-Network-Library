@@ -170,23 +170,24 @@ class RootView(tk.Tk):
         '''Send the search query to the server'''
         query = self.frame.get_query()
 
-        if query.strip(' ') == "":
-            messagebox("Invalid input", "Please enter a query", "warn")
+        if len(query.split(maxsplit = 1)) != 2:
+            messagebox("Invalid input", "Please enter a correct query", "warn")
             return
+        query = ' '.join(query.split())
 
         try:
             self._socket.sendall(bytes('\t'.join(["SEARCH", query]), "utf8"))
             response = self._socket.receive()
             # do something
-            self.frame.show_result(pickle.load(response))
         except:
             messagebox("Connect", "Unable to send request", "error")
-        pass
+            return
+        self.frame.show_result(pickle.loads(response))
 
     def book(self):
         '''Display book title and content in a seperate window'''
         bookid = self.frame.get_bookid()
-
+        if not bookid: return
         try:
             self._socket.sendall(bytes('\t'.join(["BOOK", bookid]), "utf8"))
             response = self._socket.receive().decode("utf8")

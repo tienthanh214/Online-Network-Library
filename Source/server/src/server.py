@@ -16,7 +16,6 @@ class Server:
         self.server.bind(self.IP)
         self.server.listen(5) # maximum 5 client
         self.clients_list = {}
-        Thread(target = self.accept_connections, daemon = True).start()
         # Initialize GUI
         self._root = tk.Tk()
         self._root.geometry("1000x800")
@@ -41,6 +40,9 @@ class Server:
         self._root.bind("<Destroy>", self.on_exit)
         # Initialize Database
         self.db = DataBase()
+        # Running server
+        Thread(target = self.accept_connections, daemon = True).start()
+        self.update_logs(Server.get_message(msg = "SERVER STARTED"))
         
     def runApplication(self):
         self._root.mainloop()
@@ -48,15 +50,16 @@ class Server:
     def on_exit(self, event = None):
         for client in self.clients_list:
             client.close()
-            self.update_logs(Server.get_message(self.clients_list[client], "QUIT command from Server"))
+            self.update_logs(Server.get_message(self.clients_list[client], msg = "QUIT command from Server"))
 
         del self.clients_list
         self.clients_list = {}
 
     @staticmethod
-    def get_message(user, msg):
+    def get_message(addr = None, user = None, msg = None):
         result = '[' + time.strftime("%d/%m/%Y %H:%M:%S", time.localtime()) + ']\t'
-        result += '<' + str(user) + '>\t'
+        if addr: result += str(addr) + '\t'
+        if user: result += "'" + user + "'\t"
         result += msg
         return result
 
@@ -72,11 +75,11 @@ class Server:
         while True:
             client, addr = self.server.accept()
             self.clients_list[client] = addr
-            self.update_logs(Server.get_message(addr, "CONNECTED TO SERVER"))
-            Thread(target = self.handle_client, args = (client, )).start()
+            self.update_logs(Server.get_message(addr, msg = "CONNECTED TO SERVER"))
+            Thread(target = self.handle_client, args = (client, addr, )).start()
 
 
-    def handle_client(self, client):
+    def handle_client(self, client, addr):
         """ Handles a single client connection """
         USER = None
         while True:
@@ -84,9 +87,8 @@ class Server:
                 msg = client.recv(1024).decode("utf8")
             except OSError: # client
                 break
-            print(self.clients_list[client], msg)
             if (msg == "QUIT"):
-                self.update_logs(Server.get_message(self.clients_list[client], "QUIT"))
+                self.update_logs(Server.get_message(addr, msg = "QUIT"))
                 client.shutdown(sk.SHUT_RDWR)
                 client.close()
                 del self.clients_list[client]
@@ -99,20 +101,33 @@ class Server:
                         if respone == "SUCCESS":
                             USER = cmd[1]
                         client.send(bytes(respone, "utf8"))
+                        self.update_logs(Server.get_message(addr, 
+                                        msg = ("'" + USER + "' ") + "has LOGIN " + respone))
 
                     elif cmd[0] == 'SIGNUP':
                         respone = self.db.account_sign_up(cmd[1], cmd[2])
                         client.send(bytes(respone, "utf8"))
+                        self.update_logs(Server.get_message(addr,
+                                        msg = "'" + cmd[1] + "' has SIGN UP " + respone))
 
                 else: # loged-in
                     cmd = msg.split('\t', 1)
                     if cmd[0] == 'SEARCH':
                         result = pickle.dumps(self.db.book_query(cmd[1]))
                         client.send(result)
+                        self.update_logs(Server.get_message(addr, USER, msg))
                     elif cmd[0] == 'BOOK':
-                        client.send(bytes(self.db.get_book(cmd[1]), "utf8"))
+                        try:
+                            client.send(bytes(self.db.get_book(cmd[1]), "utf8"))
+                            self.update_logs(Server.get_message(addr, USER, "READ BOOK with ID = " + cmd[1]))
+                        except FileNotFoundError:
+                            client.send(bytes("Book not available", "utf8"))
+                            self.update_logs(Server.get_message(addr, USER, "READ BOOK with ID = " + cmd[1] + " but book not found"))
+
                     elif cmd[0] == 'LOGOUT':
+                        self.update_logs(Server.get_message(addr, USER, " has LOGGED OUT"))
                         USER = None
+                    
                 pass
             pass
         pass

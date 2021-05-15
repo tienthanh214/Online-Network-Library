@@ -34,17 +34,17 @@ class DataBase:
         self.conn.close()
 
     def book_query(self, query):
-        self.conn = sqlite3.connect('src/library.db')
-        self.cur = self.conn.cursor()
-
+        if len(query.split(maxsplit = 1)) != 2: # invalid query
+            return []
         qtype, param = query.split(maxsplit = 1)
         qtype = qtype[2:]
-        param = ' '.join(param.split()).upper() # remove excess space
+        param = ' '.join(param.split()).upper() # remove excess space and upper all character
+
         if (qtype == 'ID'): param = "'" + param + "'"
+        self.conn = sqlite3.connect('src/library.db')
+        self.cur = self.conn.cursor()
         self.cur.execute("SELECT ID, Name, Author, PublishYear, Type FROM BOOK WHERE UPPER(" + qtype + ") = " + param)
         result = self.cur.fetchall()
-
-        
         self.cur.close()
         self.conn.close()
         return result
@@ -54,10 +54,9 @@ class DataBase:
         self.cur = self.conn.cursor()
 
         self.cur.execute("SELECT Link FROM BOOK WHERE ID = '%s'" % ID)
-        link = self.cur.fetchall()
+        link = self.cur.fetchall()[0][0]
         fi = open(link)
         content = fi.read()
-
         fi.close()
         self.cur.close()
         self.conn.close()

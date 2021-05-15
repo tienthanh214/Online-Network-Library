@@ -62,4 +62,5 @@ class Search(tk.Frame):
 
     def get_bookid(self):
         curItem = self.tbl_result.focus()
+        if not curItem: return None
         return self.tbl_result.item(curItem)['values'][0].strip('\n')
