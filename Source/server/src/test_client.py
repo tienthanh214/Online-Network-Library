@@ -9,6 +9,7 @@ try:
         # print(client)
         msg = input('Client: ')
         client.sendall(bytes(msg, "utf8"))
+        msg = client.recv(1024)
     # client.sendall(b"This is the message from client")
 except KeyboardInterrupt:
     client.sendall(bytes("QUIT", "utf8"))
