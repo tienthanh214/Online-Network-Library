@@ -1,10 +1,12 @@
 import sys
+from tkinter.constants import Y
 # sys.path.insert(0, '../../utility')
 from src.mysocket import *
 import time
 import pickle
 import tkinter as tk
 from threading import Thread
+import tkinter.scrolledtext as tkst
 from src.database import DataBase
 
 class Server:
@@ -19,25 +21,28 @@ class Server:
         # Initialize GUI
         self._root = tk.Tk()
         self._root.geometry("1000x800")
+        self._root.configure(bg = '#7ed6df')
         self._root.title("Online Library Server")
         self._root.lbl_title = tk.Label(self._root, text = "ONLINE LIBRARY SERVER", width = 25,
-                                            font = "Consolas 30 bold", fg = "#ff0000")
+                                            font = "Consolas 30 bold", bg = '#f9cdad', fg = "#ec2049")
         self._root.lbl_address = tk.Label(self._root, text = "Address: " + str(self.IP[0]), width = 25,
-                                            font = "Consolas 25 bold")
-        self._root.lbl_logs = tk.Label(self._root, text = "Message:", width = 25,
-                                            font = "Consolas 15 bold")
+                                            font = "Consolas 25 bold", bg = '#fc9d9a', fg = '#aa2e00')
+        self._root.lbl_logs = tk.Label(self._root, text = "Message:", width = 15,
+                                            font = "Consolas 15 bold", bg = '#97c1a9', fg = '#ffffff')
         self._root.btn_disconnect = tk.Button(self._root, text = "DISCONNECT", width = 12, 
+                                            activebackground = "#ff8c94", bg = "#355c7d", fg = '#feffff',
                                             font = "Consolas 20 bold", command = self.on_exit)
-        self._root.logs = tk.Text(self._root, width = 95, height = 40, state = "disable",
-                                            font = "Consolas 14")
-        # Draw widget
-        self._root.lbl_title.pack()
-        self._root.lbl_address.pack(pady = (5, 25))
-        self._root.lbl_logs.pack(side = tk.TOP, anchor = "w")
-        self._root.btn_disconnect.pack(side = tk.BOTTOM, anchor = "e", pady = 30, padx = 50)
-        self._root.logs.pack(side = tk.BOTTOM)
+        self._root.logs = tkst.ScrolledText(self._root, width = 95, height = 40, state = "disable",
+                                            font = ("Consolas 14 bold"), wrap = tk.WORD, bg = "#c7ecee", foreground = "#2a363d")
+
         # Setup button function
         self._root.bind("<Destroy>", self.on_exit)
+        # Draw widget
+        self._root.lbl_title.pack(pady = (20, 0))
+        self._root.lbl_address.pack(pady = (0, 10))
+        self._root.lbl_logs.pack(side = tk.TOP, anchor = "w", padx = 15)
+        self._root.btn_disconnect.pack(side = tk.BOTTOM, anchor = "e", pady = 30, padx = 50)
+        self._root.logs.pack(side = tk.BOTTOM)
         # Initialize Database
         self.db = DataBase()
         # Running server
@@ -67,6 +72,7 @@ class Server:
         if not msg: return
         self._root.logs.configure(state = "normal")
         self._root.logs.insert(tk.END, msg + '\n')
+        self._root.logs.see(tk.END)
         self._root.logs.configure(state = "disable")
         
 
@@ -97,25 +103,28 @@ class Server:
                 if not USER: # chua login
                     cmd = msg.split('\t')
                     if cmd[0] == 'LOGIN':
+                        ''' ---------- Handle login ----------'''
                         respone = self.db.account_sign_in(cmd[1], cmd[2])
                         if respone == "SUCCESS":
                             USER = cmd[1]
                         client.send(bytes(respone, "utf8"))
                         self.update_logs(Server.get_message(addr, 
-                                        msg = ("'" + USER + "' ") + "has LOGIN " + respone))
-
+                                        msg = ("'" + cmd[1] + "' ") + "HAS LOGIN " + respone))
+                        ''' ---------------------------------------------------------------- '''
                     elif cmd[0] == 'SIGNUP':
+                        ''' ---------- Handle signup ----------'''
                         respone = self.db.account_sign_up(cmd[1], cmd[2])
                         client.send(bytes(respone, "utf8"))
                         self.update_logs(Server.get_message(addr,
-                                        msg = "'" + cmd[1] + "' has SIGN UP " + respone))
-
+                                        msg = "'" + cmd[1] + "' HAS SIGN UP " + respone))
+                        ''' ---------------------------------------------------------------- '''
                 else: # loged-in
                     cmd = msg.split('\t', 1)
                     if cmd[0] == 'SEARCH':
                         result = pickle.dumps(self.db.book_query(cmd[1]))
                         client.send(result)
                         self.update_logs(Server.get_message(addr, USER, msg))
+
                     elif cmd[0] == 'BOOK':
                         try:
                             client.send(bytes(self.db.get_book(cmd[1]), "utf8"))
