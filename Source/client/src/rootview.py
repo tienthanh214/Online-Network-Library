@@ -120,11 +120,13 @@ class RootView(tk.Tk):
         '''Send name and password to the server for authentication'''
         usr, pas = self.frame.get_info()
 
-        if usr.strip(' ') == "":
-            messagebox("Invalid input", "Please enter your username", "warn")
-            return
-        if pas.strip(' ') == "":
-            messagebox("Invalid input", "Please enter your password", "warn")
+        try:
+            if usr.strip(' ') == "":
+                raise ValueError("username")
+            if pas.strip(' ') == "":
+                raise ValueError("password")
+        except ValueError as ve:
+            messagebox("Invalid input", "Please enter your " + str(ve), "warn")
             return
 
         try:
@@ -147,13 +149,24 @@ class RootView(tk.Tk):
 
     def signup(self):
         '''Create new account if it is not yet existed'''
-        usr, pas = self.frame.get_info()
+        usr, pas, chk = self.frame.get_info()
 
-        if usr.strip(' ') == "":
-            messagebox("Invalid input", "Please enter your username", "warn")
-            return
-        if pas.strip(' ') == "":
-            messagebox("Invalid input", "Please enter your password", "warn")
+        try:
+            if usr.strip(' ') == "":
+                raise ValueError("username")
+            if pas.strip(' ') == "":
+                raise ValueError("password")
+            if pas.strip(' ') == "":
+                raise ValueError("password again")
+            if not pas == chk:
+                raise ValueError("mismatch")
+        except ValueError as ve:
+            if str(ve) == "mismatch":
+                messagebox("Wrong password",
+                           "Your password inputs don't match", "warn")
+            else:
+                messagebox("Invalid input",
+                           "Please enter your " + str(ve), "warn")
             return
 
         try:

@@ -12,11 +12,3 @@ def messagebox(title="Online Library", msg="Something is wrong :(", type="warn")
 
 def yesno(title="Question", question="Yes or No?"):
     return tk.messagebox.askyesno(title, question)
-
-def isvalid_username(usr):
-    '''a-z 1-9'''
-    pass
-
-def isvalid_password(pas):
-    '''any except \n, \t, space, ', " '''
-    pass
