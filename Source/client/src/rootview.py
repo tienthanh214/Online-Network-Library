@@ -156,7 +156,7 @@ class RootView(tk.Tk):
                 raise ValueError("username")
             if pas.strip(' ') == "":
                 raise ValueError("password")
-            if pas.strip(' ') == "":
+            if chk.strip(' ') == "":
                 raise ValueError("password again")
             if not pas == chk:
                 raise ValueError("mismatch")
