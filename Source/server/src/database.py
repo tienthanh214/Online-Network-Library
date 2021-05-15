@@ -23,13 +23,14 @@ class DataBase:
                 Password VARCHAR(30)
             )
         """)
-        # self.cur.execute("INSERT INTO BOOK VALUES ('CS001', 'Computer Science An overview', 'Brookshear & Brylow', 1985, 'Computer Science', '../assets/books/book1.txt')")
-        # self.cur.execute("INSERT INTO BOOK VALUES ('NV001', 'The Alchemist', 'Paulo Coelho', 1988, 'Novel', '../assets/books/book2.txt')")
-        # self.cur.execute("INSERT INTO BOOK VALUES ('SK001', 'Time management', 'Lorem', 2020, 'Soft Skill', '../assets/books/book3.txt')")
+        # self.cur.execute("INSERT INTO BOOK VALUES ('CS001', 'Computer Science An overview', 'Brookshear & Brylow', 1985, 'Computer Science', 'assets/books/book1.txt')")
+        # self.cur.execute("INSERT INTO BOOK VALUES ('NV001', 'The Alchemist', 'Paulo Coelho', 1988, 'Novel', 'assets/books/book2.txt')")
+        # self.cur.execute("INSERT INTO BOOK VALUES ('SK001', 'Time management', 'Lorem', 2020, 'Soft Skill', 'assets/books/book3.txt')")
         # self.conn.commit()
         # self.cur.execute("INSERT INTO ACCOUNT VALUES ('tienthanh214', '2142001')")
         # self.cur.execute("INSERT INTO ACCOUNT VALUES ('lecongbinh', '123456')")
-        
+        # self.cur.execute("INSERT INTO ACCOUNT VALUES ('a', 'a')")
+        # self.conn.commit()
         self.cur.close()
         self.conn.close()
 
@@ -38,12 +39,15 @@ class DataBase:
             return []
         qtype, param = query.split(maxsplit = 1)
         qtype = qtype[2:]
-        param = ' '.join(param.split()).upper() # remove excess space and upper all character
+        param = param.upper()
 
         if (qtype == 'ID'): param = "'" + param + "'"
         self.conn = sqlite3.connect('src/library.db')
         self.cur = self.conn.cursor()
-        self.cur.execute("SELECT ID, Name, Author, PublishYear, Type FROM BOOK WHERE UPPER(" + qtype + ") = " + param)
+        try:
+            self.cur.execute("SELECT ID, Name, Author, PublishYear, Type FROM BOOK WHERE UPPER(" + qtype + ") = " + param)
+        except:
+            return []
         result = self.cur.fetchall()
         self.cur.close()
         self.conn.close()
@@ -67,7 +71,7 @@ class DataBase:
         self.conn = sqlite3.connect('src/library.db')
         self.cur = self.conn.cursor()
 
-        self.cur.execute("SELECT username FROM ACCOUNT WHERE username = '%s'" % username)
+        self.cur.execute("""SELECT username FROM ACCOUNT WHERE username = '%s'""" % username)
         if (not self.cur.fetchall()):
             self.cur.execute("INSERT INTO ACCOUNT VALUES ('%s', '%s')" % (username, password))
             self.conn.commit()
@@ -83,11 +87,11 @@ class DataBase:
         self.conn = sqlite3.connect('src/library.db')
         self.cur = self.conn.cursor()
         self.cur.execute("SELECT username, password FROM ACCOUNT WHERE username = '%s'" % username)
-        result = self.cur.fetchall()[0]
+        result = self.cur.fetchall()
         self.cur.close()
         self.conn.close()
         if (result):
-            if (result[1] == password):
+            if (result[0][1] == password):
                 return "SUCCESS"
             else:
                 return "FAIL Incorrect password"
