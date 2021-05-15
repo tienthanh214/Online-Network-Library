@@ -1,14 +1,15 @@
 import socket as sk
 import struct as stc
 
+
 class MySocket(sk.socket):
     def __init__(self, *args, **kwargs):
         super(MySocket, self).__init__(*args, **kwargs)
-    
+
     @classmethod
     def copy(cls, sock):
         fd = sk.dup(sock.fileno())
-        copy = cls(sock.family, sock.type, sock.proto, fileno = fd)
+        copy = cls(sock.family, sock.type, sock.proto, fileno=fd)
         copy.settimeout(sock.gettimeout())
         return copy
 

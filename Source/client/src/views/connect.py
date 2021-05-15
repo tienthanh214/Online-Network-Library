@@ -1,39 +1,38 @@
 import tkinter as tk
 import src.views.textstyles as style
 
+
 class Connect(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.create_widgets()
 
     def create_widgets(self):
+        self.spacer = tk.Label(self, height=4, width=30, anchor=tk.E)
+        self.spacer.grid(row=0, column=0)
+
         self.lbl_ip = tk.Label(
-            self, height=1, text="IP address:", width=20, justify="left", font=style.label_font, anchor=tk.E)
-        self.lbl_ip.grid(row=0, column=0, sticky=tk.W +
-                         tk.S+tk.E+tk.N,
+            self, height=1, text="IP address:", width=40, justify="left", font=style.label_font, anchor=tk.W)
+        self.lbl_ip.grid(row=1, column=1, sticky=tk.E+tk.W,
                          padx=10, pady=0, columnspan=1)
-        self.txt_ip = tk.Text(self, width=48, height=1, bg="#FFFFFF")
-        self.txt_ip.grid(row=0, column=1, sticky=tk.W +
-                         tk.S+tk.E+tk.N,
-                         padx=10, pady=10, columnspan=3)
+        self.txt_ip = tk.Entry(self, width=60, bg="#FFFFFF")
+        self.txt_ip.grid(row=2, column=1, sticky=tk.E,
+                         padx=10, pady=10, columnspan=1)
 
         self.lbl_port = tk.Label(
-            self, height=1, text="Port number:", width=20, justify="left", font=style.label_font, anchor=tk.E)
-        self.lbl_port.grid(row=1, column=0, sticky=tk.W +
-                           tk.S+tk.E+tk.N,
+            self, height=1, text="Port number:", width=40, justify="left", font=style.label_font, anchor=tk.W)
+        self.lbl_port.grid(row=3, column=1, sticky=tk.E+tk.W,
                            padx=10, pady=0, columnspan=1)
-        self.txt_port = tk.Text(self, width=48, height=1, bg="#FFFFFF")
-        self.txt_port.grid(row=1, column=1, sticky=tk.W +
-                           tk.S+tk.E+tk.N,
-                           padx=10, pady=10, columnspan=3)
+        self.txt_port = tk.Entry(self, width=60, bg="#FFFFFF")
+        self.txt_port.grid(row=4, column=1, sticky=tk.E,
+                           padx=10, pady=10, columnspan=1)
 
         self.btn_connect = tk.Button(
             self, text="Connect", width=10, height=2)
-        self.btn_connect.grid(row=2, column=2, sticky=tk.W +
-                              tk.S+tk.E+tk.N,
-                              padx=10, pady=10, columnspan=1)
+        self.btn_connect.grid(row=5, column=1, sticky=tk.S +
+                              tk.N, padx=10, pady=10, columnspan=1)
 
     def get_info(self):
-        ip = self.txt_ip.get("1.0", tk.END).strip('\n')
-        port = self.txt_port.get("1.0", tk.END).strip('\n')
+        ip = self.txt_ip.get()
+        port = self.txt_port.get()
         return ip, port

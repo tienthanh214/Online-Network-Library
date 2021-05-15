@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 import src.views.textstyles as style
 
+
 class Book(tk.Frame):
     def __init__(self, parent, title, content):
         super().__init__(parent)
@@ -34,7 +35,7 @@ class Book(tk.Frame):
     def download_book(self):
         files = [('Text Document', '*.txt')]
         file = filedialog.asksaveasfile(
-            mode="wb", initialfile=self._title, filetypes=files, defaultextension=files, title="Save Book")
+            mode="w", initialfile=self._title, filetypes=files, defaultextension=files, title="Save Book")
         if file != None:
             file.write(self._content)
             file.close()

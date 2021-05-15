@@ -17,7 +17,8 @@ class RootView(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         self._socket = MySocket(AF_INET, SOCK_STREAM)
-        self.username = "<N/A>"
+        self.username = tk.StringVar()
+        self.username.set("Not logged in")
 
         self.geometry("800x640+50+50")
         self.title("Online Library")
@@ -56,14 +57,15 @@ class RootView(tk.Tk):
                           ipadx=10, ipady=10, columnspan=2, rowspan=2)
 
         self.lbl_user = tk.Label(
-            self.head, text=self.username, height=1, bg="#6495ED", fg="white", font=style.user_font)
+            self.head, textvariable=self.username, height=1, bg="#6495ED", fg="white", font=style.user_font)
         self.lbl_user.grid(row=0, column=2, sticky=tk.E,
                            padx=10, pady=0, columnspan=1)
 
         self.btn_logout = tk.Button(
-            self.head, text="Log out", state=tk.DISABLED, width=6, height=1)
+            self.head, text="Log out", width=6, height=1)
         self.btn_logout.grid(row=0, column=3, sticky=tk.E,
                              padx=10, pady=0)
+        self.btn_logout.grid_remove()
 
     def create_frames(self):
         '''Init instances of frames and store in a map'''
@@ -81,10 +83,10 @@ class RootView(tk.Tk):
         self.frames["Connect"].btn_connect["command"] = self.connect
 
         self.frames["Login"].btn_login["command"] = self.login
-        self.frames["Login"].btn_signup["command"] = lambda: self.show_frame(
+        self.frames["Login"].btn_newacc["command"] = lambda: self.show_frame(
             "Signup")
 
-        self.frames["Signup"].btn_signup["command"] = lambda: self.signup
+        self.frames["Signup"].btn_signup["command"] = self.signup
         self.frames["Signup"].btn_back["command"] = lambda: self.show_frame(
             "Login")
 
@@ -132,8 +134,8 @@ class RootView(tk.Tk):
 
             if response == "SUCCESS":
                 messagebox("Log in successful", "Welcome, " + usr, "info")
-                self.username = usr
-                self.btn_logout['state'] = tk.NORMAL
+                self.username.set(usr)
+                self.btn_logout.grid()
                 self.show_frame("Search")
             else:
                 errmsg = response.split(' ', 1)[1]
@@ -153,7 +155,8 @@ class RootView(tk.Tk):
             return
 
         try:
-            self._socket.sendall(bytes('\t'.join(["SIGNUP", usr, pas]), "utf8"))
+            self._socket.sendall(
+                bytes('\t'.join(["SIGNUP", usr, pas]), "utf8"))
             response = self._socket.receive().decode("utf8")
 
             if response == "SUCCESS":
@@ -170,15 +173,21 @@ class RootView(tk.Tk):
         '''Send the search query to the server'''
         query = self.frame.get_query()
 
-        if len(query.split(maxsplit = 1)) != 2:
+        analyze = query.split(maxsplit=1)
+        try:
+            if len(analyze) != 2:
+                raise
+            if not analyze[0] == "F_ID" and not (analyze[1][0] == analyze[1][len(analyze[1]) - 1] and (analyze[1][0] == '"' or analyze[1][0] == '"')):
+                raise
+        except:
             messagebox("Invalid input", "Please enter a correct query", "warn")
             return
-        query = ' '.join(query.split())
+
+        query = ' '.join(analyze)
 
         try:
             self._socket.sendall(bytes('\t'.join(["SEARCH", query]), "utf8"))
             response = self._socket.receive()
-            # do something
         except:
             messagebox("Connect", "Unable to send request", "error")
             return
@@ -186,12 +195,13 @@ class RootView(tk.Tk):
 
     def book(self):
         '''Display book title and content in a seperate window'''
-        bookid = self.frame.get_bookid()
-        if not bookid: return
+        book = self.frame.get_bookid()
+        if not book:
+            return
         try:
-            self._socket.sendall(bytes('\t'.join(["BOOK", bookid]), "utf8"))
+            self._socket.sendall(bytes('\t'.join(["BOOK", book[0]]), "utf8"))
             response = self._socket.receive().decode("utf8")
-            Book(tk.Tk(), "fix this", response)
+            Book(tk.Tk(), book[1], response)
             # do something
         except:
             messagebox("View book", "Unable to retrieve book", "error")
@@ -205,8 +215,8 @@ class RootView(tk.Tk):
         finally:
             self.frames["Search"].clear_result()
             self.frames["Search"].clear_query()
-            self.username = "<N/A>"
-            self.btn_logout['state'] = tk.DISABLED
+            self.username.set("Not logged in")
+            self.btn_logout.grid_remove()
             self.show_frame("Login")
 
     def quit_prog(self, event):
