@@ -35,6 +35,14 @@ class DataBase:
         self.cur.close()
         self.conn.close()
 
+    @staticmethod
+    def standardized_input(x):
+        x = str(x)
+        if x.find('"') != -1: # if have " string format will be '...'
+            return x.replace('"', '""')
+        else:
+            return x.repace("'", "''")
+
     def book_query(self, query):
         if len(query.split(maxsplit = 1)) != 2: # invalid query
             return []
@@ -71,7 +79,7 @@ class DataBase:
 
         self.cur.execute("""SELECT username FROM ACCOUNT WHERE username = '%s'""" % username)
         if (not self.cur.fetchall()):
-            self.cur.execute("""INSERT INTO ACCOUNT VALUES ('%s', '%s')""" % (username, password.replace("'", "''")))
+            self.cur.execute("""INSERT INTO ACCOUNT VALUES ('%s', '%s')""" % (username, password.replace("\\'", "''")))
             self.conn.commit()
             msg = "SUCCESS"
         else:
@@ -122,7 +130,7 @@ class DataBase:
         self.cur.execute("""SELECT ID FROM BOOK WHERE ID = '%s'""" % book[0].upper())
         flag = False
         if not self.cur.fetchall(): # if ID not already exists
-            self.cur.execute("INSERT INTO BOOK VALUES " + str(book))
+            self.cur.execute("""INSERT INTO BOOK VALUES """ + str(book))
             self.conn.commit()
             flag = True
         self.cur.close()
@@ -141,7 +149,7 @@ class DataBase:
         self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
         self.cur.execute("""DELETE FROM BOOK WHERE ID = '%s'""" % book[0])
-        self.cur.execute("""INSERT INTO BOOK VALUES """ + str(book))
+        self.cur.execute("""INSERT INTO BOOK VALUES """ + str(book).replace("\\'", "''"))
         self.conn.commit()
         self.cur.close()
         self.conn.close()
