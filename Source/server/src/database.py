@@ -1,8 +1,9 @@
 import sqlite3
 
 class DataBase:
-    def __init__(self):
-        self.conn = sqlite3.connect('src/library.db')
+    def __init__(self, link = 'src/library.db'):
+        self.link = link
+        self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
         # Creat table
         ## Creat table Book
@@ -42,7 +43,7 @@ class DataBase:
         param = param.upper()
 
         if (qtype == 'ID'): param = "'" + param + "'"
-        self.conn = sqlite3.connect('src/library.db')
+        self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
         try:
             self.cur.execute("SELECT ID, Name, Author, PublishYear, Type FROM BOOK WHERE UPPER(" + qtype + ") = " + param)
@@ -54,9 +55,8 @@ class DataBase:
         return result
 
     def get_book(self, ID):
-        self.conn = sqlite3.connect('src/library.db')
+        self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
-
         self.cur.execute("SELECT Link FROM BOOK WHERE ID = '%s'" % ID)
         link = self.cur.fetchall()[0][0]
         fi = open(link)
@@ -66,14 +66,13 @@ class DataBase:
         self.conn.close()
         return content
 
-
     def account_sign_up(self, username, password):
-        self.conn = sqlite3.connect('src/library.db')
+        self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
 
         self.cur.execute("""SELECT username FROM ACCOUNT WHERE username = '%s'""" % username)
         if (not self.cur.fetchall()):
-            self.cur.execute("INSERT INTO ACCOUNT VALUES ('%s', '%s')" % (username, password))
+            self.cur.execute("INSERT INTO ACCOUNT VALUES ('%s', '%s')" % (username, password.replace("'", "''")))
             self.conn.commit()
             msg = "SUCCESS"
         else:
@@ -84,7 +83,7 @@ class DataBase:
         return msg
 
     def account_sign_in(self, username, password):
-        self.conn = sqlite3.connect('src/library.db')
+        self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
         self.cur.execute("SELECT username, password FROM ACCOUNT WHERE username = '%s'" % username)
         result = self.cur.fetchall()
@@ -99,21 +98,51 @@ class DataBase:
             return "FAIL Invalid account"
 
 
-# x = DataBase()
-# x.cur.execute("SELECT * FROM ACCOUNT")
-# print(x.cur.fetchall())
-
-# print(x.account_sign_up('ahihi', 'dongok'))
-# x.cur.execute("SELECT * FROM ACCOUNT")
-# print(x.cur.fetchall())
-
-# print(x.account_sign_up('tienthanh214', '2142001'))
-# x.cur.execute("SELECT * FROM ACCOUNT")
-# print(x.cur.fetchall())
-
-
-
-
+    # extension for server book manager
+    def get_all_book(self):
+        self.conn = sqlite3.connect(self.link)
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT * from BOOK")
+        result = self.cur.fetchall()
+        self.cur.close()
+        self.conn.close()
+        return result
     
-        
+    def get_one_book(self, ID):
+        self.conn = sqlite3.connect(self.link)
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT * from BOOK where ID = '%s'" % ID.upper())
+        result = self.cur.fetchall()
+        self.cur.close()
+        self.conn.close()
+        return result
 
+    def insert_new_book(self, book):
+        self.conn = sqlite3.connect(self.link)
+        self.cur = self.conn.cursor()
+        self.cur.execute("""SELECT ID FROM BOOK WHERE ID = '%s'""" % book[0].upper())
+        flag = False
+        if not self.cur.fetchall(): # if ID not already exists
+            self.cur.execute("INSERT INTO BOOK VALUES " + str(book))
+            self.conn.commit()
+            flag = True
+        self.cur.close()
+        self.conn.close()
+        return flag    
+    
+    def delete_one_book(self, ID):
+        self.conn = sqlite3.connect(self.link)
+        self.cur = self.conn.cursor()
+        self.cur.execute("""DELETE FROM BOOK WHERE ID = '%s'""" % ID.upper())
+        self.conn.commit()
+        self.cur.close()
+        self.conn.close()
+    
+    def update_one_book(self, book):
+        self.conn = sqlite3.connect(self.link)
+        self.cur = self.conn.cursor()
+        self.cur.execute("""DELETE FROM BOOK WHERE ID = '%s'""" % book[0])
+        self.cur.execute("""INSERT INTO BOOK VALUES """ + str(book))
+        self.conn.commit()
+        self.cur.close()
+        self.conn.close()
