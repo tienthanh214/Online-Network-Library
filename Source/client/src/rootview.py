@@ -142,7 +142,7 @@ class RootView(tk.Tk):
                 errmsg = response.split(' ', 1)[1]
                 messagebox("Log in failed", errmsg, "warn")
         except:
-            if yesno("Unable to connect", "Do you want to logout reconnect?"):
+            if yesno("CONNECTION FAILURE", "The connection to the server HAS FAILED :(\nDo you want to logout and reconnect?"):
                 self.logout()
                 self._socket = MySocket(AF_INET, SOCK_STREAM)
                 self.show_frame("Connect")
@@ -181,7 +181,7 @@ class RootView(tk.Tk):
                 errmsg = response.split(' ', 1)[1]
                 messagebox("Sign up failed", errmsg, "warn")
         except:
-            if yesno("Unable to connect", "Do you want to logout and reconnect?"):
+            if yesno("CONNECTION FAILURE", "The connection to the server HAS FAILED :(\nDo you want to logout and reconnect?"):
                 self.logout()
                 self._socket = MySocket(AF_INET, SOCK_STREAM)
                 self.show_frame("Connect")
@@ -194,20 +194,21 @@ class RootView(tk.Tk):
         try:
             if len(analyze) != 2:
                 raise
-            if not analyze[0] == "F_ID" and not (analyze[1][0] == analyze[1][len(analyze[1]) - 1] and (analyze[1][0] == '"' or analyze[1][0] == '"')):
-                raise
+            if analyze[0].upper() != "F_ID":
+                if analyze[1][0] != '"' or analyze[1][-1] != '"':
+                    raise
         except:
             messagebox("Invalid input", "Please enter a correct query", "warn")
             return
 
-        query = ' '.join(analyze)
+        query = ' '.join(query.split())
 
         try:
             self._socket.sendall(bytes('\t'.join(["SEARCH", query]), "utf8"))
             response = self._socket.receive()
             self.frame.show_result(pickle.loads(response))
         except:
-            if yesno("Unable to connect", "Do you want to logout and reconnect?"):
+            if yesno("CONNECTION FAILURE", "The connection to the server HAS FAILED :(\nDo you want to logout and reconnect?"):
                 self.logout()
                 self._socket = MySocket(AF_INET, SOCK_STREAM)
                 self.show_frame("Connect")
@@ -223,7 +224,7 @@ class RootView(tk.Tk):
             Book(tk.Toplevel(self), book[1], response)
             # do something
         except:
-            if yesno("Unable to connect", "Do you want to logout and reconnect?"):
+            if yesno("CONNECTION FAILURE", "The connection to the server HAS FAILED :(\nDo you want to logout and reconnect?"):
                 self.logout()
                 self._socket = MySocket(AF_INET, SOCK_STREAM)
                 self.show_frame("Connect")
