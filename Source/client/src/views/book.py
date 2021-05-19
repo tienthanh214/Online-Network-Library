@@ -35,7 +35,7 @@ class Book(tk.Frame):
     def download_book(self):
         files = [('Text Document', '*.txt')]
         file = filedialog.asksaveasfile(
-            mode="w", initialfile=self._title, filetypes=files, defaultextension=files, title="Save Book")
+            mode="wb", initialfile=self._title, filetypes=files, defaultextension=files, title="Save Book")
         if file != None:
-            file.write(self._content)
+            file.write(self._content.encode("utf8"))
             file.close()
