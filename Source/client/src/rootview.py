@@ -8,7 +8,7 @@ from src.views.signup import Signup
 from src.views.connect import Connect
 from src.views.search import Search
 from src.views.book import Book
-from src.views.dialog import messagebox
+from src.views.dialog import messagebox, yesno
 from src.mysocket import MySocket
 
 
@@ -78,6 +78,8 @@ class RootView(tk.Tk):
     def bind_action(self):
         '''Bind button with actions'''
         self.bind("<Destroy>", self.quit_prog)
+        self.bind("<Tab>", self.focus_next_widget)
+        self.bind("<Return>", lambda e: self.enterkey(e))
         self.btn_logout["command"] = self.logout
 
         self.frames["Connect"].btn_connect["command"] = self.connect
@@ -101,17 +103,14 @@ class RootView(tk.Tk):
 
     def connect(self):
         '''Connect to the library server'''
-        ip, port = self.frame.get_info()
+        ip = self.frame.get_info()
 
         if ip.strip(' ') == "":
             messagebox("Invalid input", "Please enter an IP address", "warn")
             return
-        if port.strip(' ') == "":
-            messagebox("Invalid input", "Please enter a port number", "warn")
-            return
 
         try:
-            self._socket.connect((ip, int(port)))
+            self._socket.connect((ip, 54321))
             messagebox("Accepted", "Connected to the library", "info")
             self.show_frame("Login")
         except:
@@ -121,11 +120,13 @@ class RootView(tk.Tk):
         '''Send name and password to the server for authentication'''
         usr, pas = self.frame.get_info()
 
-        if usr.strip(' ') == "":
-            messagebox("Invalid input", "Please enter your username", "warn")
-            return
-        if pas.strip(' ') == "":
-            messagebox("Invalid input", "Please enter your password", "warn")
+        try:
+            if usr.strip(' ') == "":
+                raise ValueError("username")
+            if pas.strip(' ') == "":
+                raise ValueError("password")
+        except ValueError as ve:
+            messagebox("Invalid input", "Please enter your " + str(ve), "warn")
             return
 
         try:
@@ -141,17 +142,31 @@ class RootView(tk.Tk):
                 errmsg = response.split(' ', 1)[1]
                 messagebox("Log in failed", errmsg, "warn")
         except:
-            messagebox("Log in", "Unable to send request", "error")
+            if yesno("Unable to connect", "Do you want to logout reconnect?"):
+                self.logout()
+                self._socket = MySocket(AF_INET, SOCK_STREAM)
+                self.show_frame("Connect")
 
     def signup(self):
         '''Create new account if it is not yet existed'''
-        usr, pas = self.frame.get_info()
+        usr, pas, chk = self.frame.get_info()
 
-        if usr.strip(' ') == "":
-            messagebox("Invalid input", "Please enter your username", "warn")
-            return
-        if pas.strip(' ') == "":
-            messagebox("Invalid input", "Please enter your password", "warn")
+        try:
+            if usr.strip(' ') == "":
+                raise ValueError("username")
+            if pas.strip(' ') == "":
+                raise ValueError("password")
+            if chk.strip(' ') == "":
+                raise ValueError("password again")
+            if not pas == chk:
+                raise ValueError("mismatch")
+        except ValueError as ve:
+            if str(ve) == "mismatch":
+                messagebox("Wrong password",
+                           "Your password inputs don't match", "warn")
+            else:
+                messagebox("Invalid input",
+                           "Please enter your " + str(ve), "warn")
             return
 
         try:
@@ -166,8 +181,10 @@ class RootView(tk.Tk):
                 errmsg = response.split(' ', 1)[1]
                 messagebox("Sign up failed", errmsg, "warn")
         except:
-            messagebox("Connect", "Unable to send request", "error")
-        pass
+            if yesno("Unable to connect", "Do you want to logout and reconnect?"):
+                self.logout()
+                self._socket = MySocket(AF_INET, SOCK_STREAM)
+                self.show_frame("Connect")
 
     def search(self):
         '''Send the search query to the server'''
@@ -188,10 +205,12 @@ class RootView(tk.Tk):
         try:
             self._socket.sendall(bytes('\t'.join(["SEARCH", query]), "utf8"))
             response = self._socket.receive()
+            self.frame.show_result(pickle.loads(response))
         except:
-            messagebox("Connect", "Unable to send request", "error")
-            return
-        self.frame.show_result(pickle.loads(response))
+            if yesno("Unable to connect", "Do you want to logout and reconnect?"):
+                self.logout()
+                self._socket = MySocket(AF_INET, SOCK_STREAM)
+                self.show_frame("Connect")
 
     def book(self):
         '''Display book title and content in a seperate window'''
@@ -201,10 +220,13 @@ class RootView(tk.Tk):
         try:
             self._socket.sendall(bytes('\t'.join(["BOOK", book[0]]), "utf8"))
             response = self._socket.receive().decode("utf8")
-            Book(tk.Tk(), book[1], response)
+            Book(tk.Toplevel(self), book[1], response)
             # do something
         except:
-            messagebox("View book", "Unable to retrieve book", "error")
+            if yesno("Unable to connect", "Do you want to logout and reconnect?"):
+                self.logout()
+                self._socket = MySocket(AF_INET, SOCK_STREAM)
+                self.show_frame("Connect")
 
     def logout(self):
         '''Erase info and return to login screen'''
@@ -213,10 +235,13 @@ class RootView(tk.Tk):
         except:
             print("> not connected")
         finally:
-            self.frames["Search"].clear_result()
-            self.frames["Search"].clear_query()
             self.username.set("Not logged in")
             self.btn_logout.grid_remove()
+            self.frames["Connect"].clear_all()
+            self.frames["Login"].clear_all()
+            self.frames["Signup"].clear_all()
+            self.frames["Search"].clear_result()
+            self.frames["Search"].clear_query()
             self.show_frame("Login")
 
     def quit_prog(self, event):
@@ -227,3 +252,17 @@ class RootView(tk.Tk):
                 self._socket.close()
         except:
             print("> not connected")
+
+    def focus_next_widget(self, event):
+        event.widget.tk_focusNext().focus()
+        return("break")
+
+    def enterkey(self, event):
+        if event.widget.master._name == "!connect":
+            self.connect()
+        elif event.widget.master._name == "!login":
+            self.login()
+        elif event.widget.master._name == "!signup":
+            self.signup()
+        elif event.widget.master._name == "!search":
+            self.search()

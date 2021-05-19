@@ -23,7 +23,7 @@ class Login(tk.Frame):
             self, height=1, text="Password:", width=40, justify="left", font=style.label_font, anchor=tk.W)
         self.lbl_password.grid(row=3, column=1, sticky=tk.E+tk.W,
                                padx=10, pady=0, columnspan=2)
-        self.txt_password = tk.Entry(self, width=60, bg="#FFFFFF")
+        self.txt_password = tk.Entry(self, show="*", width=60, bg="#FFFFFF")
         self.txt_password.grid(row=4, column=1, sticky=tk.E,
                                padx=10, pady=10, columnspan=2)
 
@@ -41,3 +41,7 @@ class Login(tk.Frame):
         usr = self.txt_username.get()
         pas = self.txt_password.get()
         return usr, pas
+
+    def clear_all(self):
+        self.txt_username.delete(0, tk.END)
+        self.txt_password.delete(0, tk.END)
