@@ -39,9 +39,8 @@ class DataBase:
         if len(query.split(maxsplit = 1)) != 2: # invalid query
             return []
         qtype, param = query.split(maxsplit = 1)
-        qtype = qtype[2:]
+        qtype = qtype[2:].upper()
         param = param.upper()
-        print(param)
         if (qtype == 'ID'): param = "'" + param + "'"
         self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
@@ -72,7 +71,7 @@ class DataBase:
 
         self.cur.execute("""SELECT username FROM ACCOUNT WHERE username = '%s'""" % username)
         if (not self.cur.fetchall()):
-            self.cur.execute("INSERT INTO ACCOUNT VALUES ('%s', '%s')" % (username, password.replace("'", "''")))
+            self.cur.execute("""INSERT INTO ACCOUNT VALUES ('%s', '%s')""" % (username, password.replace("'", "''")))
             self.conn.commit()
             msg = "SUCCESS"
         else:

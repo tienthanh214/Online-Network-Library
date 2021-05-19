@@ -136,6 +136,8 @@ class Manager:
                     self.input_box.lbl_notice.configure(text = "Please enter Book ID no more than 5 character\n(ex: CS001, 12345,...)")
                     return
                 entry_text = entry_text.upper()
+            if (col == "Link"):
+                entry_text = entry_text.replace('\\', '/')
             lst.append(entry_text.replace("'", "''")) #replace to avoid ' character cause sql query error
         return tuple(lst)
 
