@@ -26,7 +26,7 @@ class RootView(tk.Tk):
         self.grid()
 
         # Header
-        self.head = tk.Frame(self, bg="#6495ED")
+        self.head = tk.Frame(self, bg="#7ed6df")
         self.head.pack(side="top", fill="both", expand=True)
         self.head.grid_rowconfigure(0, weight=1)
         self.head.grid_columnconfigure(0, weight=1)
@@ -52,19 +52,19 @@ class RootView(tk.Tk):
     def create_header(self):
         '''Init header element'''
         self.lbl_app = tk.Label(
-            self.head, text='HCMUS Online Library', height=1, font=style.logo_font, bg="white")
-        self.lbl_app.grid(row=0, column=0, sticky=tk.W, padx=30,
+            self.head, text='HCMUS Online Library', height=1, font=style.logo_font, bg="#f9cdad", fg="#ec2049")
+        self.lbl_app.grid(row=0, column=0, sticky=tk.W, padx=30, pady=10,
                           ipadx=10, ipady=10, columnspan=2, rowspan=2)
 
         self.lbl_user = tk.Label(
-            self.head, textvariable=self.username, height=1, bg="#6495ED", fg="white", font=style.user_font)
-        self.lbl_user.grid(row=0, column=2, sticky=tk.E,
+            self.head, textvariable=self.username, height=1, bg="#7ed6df", fg="#aa2e00", font=style.user_font)
+        self.lbl_user.grid(row=0, column=2, sticky=tk.E, ipadx=10,
                            padx=10, pady=0, columnspan=1)
 
         self.btn_logout = tk.Button(
-            self.head, text="Log out", width=6, height=1)
-        self.btn_logout.grid(row=0, column=3, sticky=tk.E,
-                             padx=10, pady=0)
+            self.head, text="Log out", width=6, height=1, bg='#97c1a9', fg='#000000')
+        self.btn_logout.grid(row=0, column=3, sticky=tk.E, ipadx=5,
+                             padx=5, pady=0)
         self.btn_logout.grid_remove()
 
     def create_frames(self):

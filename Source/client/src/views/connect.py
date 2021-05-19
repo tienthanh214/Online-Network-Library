@@ -8,21 +8,22 @@ class Connect(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        self.spacer = tk.Label(self, height=6, width=30, anchor=tk.E)
+        self.spacer = tk.Label(self, height=8, width=26, anchor=tk.E)
         self.spacer.grid(row=0, column=0)
 
         self.lbl_ip = tk.Label(self, height=1, text="IP address:",
-                               width=40, justify="left", font=style.label_font, anchor=tk.W)
+                               width=15, justify="left", font=style.label_font, anchor=tk.W)
         self.lbl_ip.grid(row=1, column=1, sticky=tk.E+tk.W,
                          padx=10, pady=0, columnspan=1)
-        self.txt_ip = tk.Entry(self, width=60, bg="#FFFFFF")
+        self.txt_ip = tk.Entry(
+            self, width=36, font=style.entry_font, bg="#FFFFFF")
         self.txt_ip.grid(row=2, column=1, sticky=tk.E,
                          padx=10, pady=10, columnspan=1)
 
-        self.btn_connect = tk.Button(
-            self, text="Connect", width=10, height=2)
+        self.btn_connect = tk.Button(self, text="Connect", width=10, height=1, font=style.btn_font,
+                                     activebackground=style.btn_style['actbg'], bg=style.btn_style['bg'], fg=style.btn_style['fg'])
         self.btn_connect.grid(row=5, column=1, sticky=tk.S +
-                              tk.N, padx=10, pady=10, columnspan=1)
+                              tk.N, padx=5, pady=5, columnspan=1)
 
     def get_info(self):
         ip = self.txt_ip.get()
