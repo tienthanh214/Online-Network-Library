@@ -234,7 +234,7 @@ class RootView(tk.Tk):
         try:
             self._socket.sendall(bytes("LOGOUT", "utf8"))
         except:
-            print("> not connected")
+            pass
         finally:
             self.username.set("Not logged in")
             self.btn_logout.grid_remove()
@@ -252,7 +252,7 @@ class RootView(tk.Tk):
                 self._socket.sendall(bytes("QUIT", "utf8"))
                 self._socket.close()
         except:
-            print("> not connected")
+            pass
 
     def focus_next_widget(self, event):
         event.widget.tk_focusNext().focus()

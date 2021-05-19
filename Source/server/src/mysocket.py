@@ -19,7 +19,6 @@ class MySocket(sk.socket):
     def send(self, msg):
         """Prefix each message with a 4-byte length (network byte order)"""
         msg = stc.pack('>I', len(msg)) + msg
-        print("> send len: ", len(msg))
         self.sendall(msg)
 
     def receive(self):
@@ -28,7 +27,6 @@ class MySocket(sk.socket):
         if not raw_msglen:
             return None
         msglen = stc.unpack('>I', raw_msglen)[0]
-        print("> recv len: ", msglen)
         # Read the message data
         return self.recvall(msglen)
 
