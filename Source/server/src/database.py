@@ -41,7 +41,7 @@ class DataBase:
         qtype, param = query.split(maxsplit = 1)
         qtype = qtype[2:]
         param = param.upper()
-
+        print(param)
         if (qtype == 'ID'): param = "'" + param + "'"
         self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
@@ -59,7 +59,7 @@ class DataBase:
         self.cur = self.conn.cursor()
         self.cur.execute("SELECT Link FROM BOOK WHERE ID = '%s'" % ID)
         link = self.cur.fetchall()[0][0]
-        fi = open(link)
+        fi = open(link, 'r', encoding = 'utf8')
         content = fi.read()
         fi.close()
         self.cur.close()

@@ -39,8 +39,6 @@ class Manager:
         self.manager.result.grid(column = 0, row = 2, sticky = 'nsew', pady = 30, columnspan = len(self.cols_book))
         self.manager.scroll_bar.grid(column = len(self.cols_book), row = 2, columnspan = 1)
         # setup button function
-        # self.manager.btn_insert.bind("<Button>", self.insert_new_book)
-        # self.manager.btn_update.bind("<Button>", self.update_book)
 
     def view_library_book(self, event = None):
         book_list = self.db.get_all_book()
@@ -71,7 +69,7 @@ class Manager:
         self.input_box.btn_clear.grid(row = len(self.cols_book) + 1, column = 1, pady = 20, padx = 150, sticky = "e", columnspan = 1)
 
     def fileDialog(self, event = None):
-        filename = filedialog.askopenfilename(title = "Select a book file")
+        filename = filedialog.askopenfilename(parent = self.input_box, title = "Select a book file")
         if not filename: return
         cwd = os.getcwd()
         if cwd[0] == filename[0] and os.path.commonpath([cwd, filename]) == cwd:

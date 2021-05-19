@@ -34,7 +34,7 @@ class Server:
                                             font = "Consolas 15 bold", bg = '#97c1a9', fg = '#ffffff')
         self._root.btn_disconnect = tk.Button(self._root.button_frame, text = "DISCONNECT", width = 12, 
                                             activebackground = "#ff8c94", bg = "#355c7d", fg = '#feffff',
-                                            font = "Consolas 20 bold", command = self.on_exit)
+                                            font = "Consolas 20 bold", command = self.on_exit_main)
         self._root.btn_manager = tk.Button(self._root.button_frame, text = "MANAGER", width = 12,
                                             activebackground = "#ff8c94", bg = "#355c7d", fg = "#feffff",
                                             disabledforeground = "#f9c859",
@@ -43,7 +43,7 @@ class Server:
                                             font = ("Consolas 14 bold"), wrap = tk.WORD, bg = "#c7ecee", foreground = "#2a363d")
         
         # Setup button function
-        self._root.bind("<Destroy>", self.on_exit)
+        self._root.bind("<Destroy>", self.on_exit_main)
         # Draw widgets
         self._root.lbl_title.pack(pady = (20, 0))
         self._root.lbl_address.pack(pady = (0, 10))
@@ -52,10 +52,6 @@ class Server:
         self._root.btn_manager.pack(side = tk.LEFT, padx = 40)
         self._root.btn_disconnect.pack(side = tk.RIGHT, padx = 40)
         self._root.logs.pack(side = tk.BOTTOM)
-
-        
-        # self._root.btn_disconnect.pack(side = tk.BOTTOM, anchor = "e", pady = 30, padx = 50)
-        # self._root.btn_manager.pack(side = tk.BOTTOM, anchor = "e", pady = (-30, 0), padx = 50)
         # Initialize Database
         self.db = DataBase()
         # Running server
@@ -65,7 +61,7 @@ class Server:
     def runApplication(self):
         self._root.mainloop()
     
-    def on_exit(self, event = None):
+    def on_exit_main(self, event = None):
         for client in self.clients_list:
             client.close()
             self.update_logs(Server.get_message(self.clients_list[client], msg = "QUIT command from Server"))
