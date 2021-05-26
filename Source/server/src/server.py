@@ -10,6 +10,7 @@ import tkinter.scrolledtext as tkst
 from src.database import DataBase
 from src.manager import Manager
 import time
+
 MAXIMUM_CONNECTION = 10
 
 class Server:
@@ -148,11 +149,13 @@ class Server:
                         result = pickle.dumps(self.db.book_query(cmd[1]))
                         client.send(result)
                         self.update_logs(Server.get_message(addr, USER, msg))
-
+                        self.update_logs(Server.get_message("SERVER", msg = "send search result for " + str(addr)))
+                        
                     elif cmd[0] == 'BOOK':
                         try:
                             client.send(bytes(self.db.get_book(cmd[1]), "utf8"))
                             self.update_logs(Server.get_message(addr, USER, "READ BOOK with ID = " + cmd[1]))
+                            self.update_logs(Server.get_message("SERVER", msg = "send book for " + str(addr)))
                         except FileNotFoundError:
                             client.send(bytes("Book not available", "utf8"))
                             self.update_logs(Server.get_message(addr, USER, "READ BOOK with ID = " + cmd[1] + " but book not found"))
@@ -161,6 +164,8 @@ class Server:
                         self.update_logs(Server.get_message(addr, USER, " has LOGGED OUT"))
                         USER = None
                     
+                    elif cmd[0] == 'DOWNLOAD':
+                        self.update_logs(Server.get_message(addr, USER, " DOWNLOAD BOOK with ID = " + cmd[1]))
                 pass
             pass
         pass
