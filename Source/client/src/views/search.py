@@ -31,7 +31,7 @@ class Search(tk.Frame):
         self.spacer1.grid(row=2, column=0)
 
         self.lbl_result = tk.Label(
-            self, height=1, text="~ " * 6 + " Result " + " ~" * 6, width=30, font="Helvetica 16 bold italic", bg = "#c7ecee", fg = "#2a363d")
+            self, height=1, text="~ " * 6 + " Result " + " ~" * 6, width=30, font="Helvetica 16 bold italic", bg="#c7ecee", fg="#2a363d")
         self.lbl_result.grid(row=3, column=1, sticky=tk.W+tk.E,
                              padx=10, pady=0, columnspan=5)
         self.scb_result = tk.Scrollbar(self, orient=tk.VERTICAL)
@@ -50,12 +50,14 @@ class Search(tk.Frame):
         self.tbl_result.column("ID", width=80, stretch=True)
 
         self.btn_clear = tk.Button(
-            self, text="Clear", width=6, height=1, command=self.clear_result, fg="yellow",activebackground= "orange", bg="#cc0000", font="Helvatica 12 bold italic")
+            self, text="Clear", width=6, height=1, command=self.clear_result, fg="yellow", activebackground="orange", bg="#cc0000", font="Helvatica 12 bold italic")
         self.btn_clear.grid(row=5, column=5, sticky=tk.E,
                             padx=0, pady=10, columnspan=1)
 
     def show_result(self, table):
         self.clear_result()
+        if len(table) == 0:
+            table = [["No result"] * 5]
         for row in table:
             self.tbl_result.insert("", "end", values=row)
 
