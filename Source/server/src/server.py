@@ -161,11 +161,11 @@ class Server:
                             self.update_logs(Server.get_message(addr, USER, "READ BOOK with ID = " + cmd[1] + " but book not found"))
 
                     elif cmd[0] == 'LOGOUT':
-                        self.update_logs(Server.get_message(addr, USER, " has LOGGED OUT"))
+                        self.update_logs(Server.get_message(addr, USER, "has LOGGED OUT"))
                         USER = None
                     
                     elif cmd[0] == 'DOWNLOAD':
-                        self.update_logs(Server.get_message(addr, USER, " DOWNLOAD BOOK with ID = " + cmd[1]))
+                        self.update_logs(Server.get_message(addr, USER, "DOWNLOAD BOOK with ID = " + cmd[1]))
                 pass
             pass
         pass
