@@ -226,13 +226,16 @@ class RootView(tk.Tk):
         try:
             self._socket.sendall(bytes('\t'.join(["BOOK", book[0]]), "utf8"))
             response = self._socket.receive().decode("utf8")
-            Book(tk.Toplevel(self), book[1], response)
+            Book(tk.Toplevel(self), book[0], book[1], response, self.download)
             # do something
         except:
             if yesno("CONNECTION FAILURE", "The connection to the server HAS FAILED :(\nDo you want to logout and reconnect?"):
                 self.logout()
                 self._socket = MySocket(AF_INET, SOCK_STREAM)
                 self.show_frame("Connect")
+
+    def download(self, bookid):
+        self._socket.sendall(bytes('\t'.join(["DOWNLOAD", bookid]), "utf8"))
 
     def logout(self):
         '''Erase info and return to login screen'''

@@ -4,13 +4,15 @@ import src.views.textstyles as style
 
 
 class Book(tk.Frame):
-    def __init__(self, parent, title, content):
+    def __init__(self, parent, bookid, title, content, sendfunc):
         super().__init__(parent)
         self.parent = parent
         self.parent.title("View Book")
         self.parent.resizable(False, False)
+        self._bookid = bookid
         self._title = title
         self._content = content
+        self._sendfunc = sendfunc
         self.create_widgets()
         self.mainloop()
 
@@ -33,6 +35,7 @@ class Book(tk.Frame):
                             padx=10, pady=10, columnspan=1)
 
     def download_book(self):
+        self._sendfunc(self._bookid)
         files = [('Text Document', '*.txt')]
         file = filedialog.asksaveasfile(
             mode="wb", initialfile=self._title, filetypes=files, defaultextension=files, title="Save Book")
