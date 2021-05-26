@@ -138,7 +138,7 @@ class Manager:
                 entry_text = entry_text.upper()
             if (col == "Link"):
                 entry_text = entry_text.replace('\\', '/')
-            lst.append(entry_text) #replace to avoid ' character cause sql query error
+            lst.append(entry_text)
         return tuple(lst)
 
 

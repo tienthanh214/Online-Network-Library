@@ -9,6 +9,8 @@ from threading import Thread
 import tkinter.scrolledtext as tkst
 from src.database import DataBase
 from src.manager import Manager
+import time
+MAXIMUM_CONNECTION = 10
 
 class Server:
     def __init__(self):
@@ -17,7 +19,7 @@ class Server:
         self.IP = (sk.gethostbyname(sk.gethostname()), 54321)
         self.server = MySocket(sk.AF_INET, sk.SOCK_STREAM)
         self.server.bind(self.IP)
-        self.server.listen(5) # maximum 5 client
+        self.server.listen(MAXIMUM_CONNECTION) # maximum 5 client
         self.clients_list = {}
         # Initialize GUI
         self._root = tk.Tk()
@@ -97,6 +99,11 @@ class Server:
         """ Multithreading handling for incomming clients"""
         while True:
             client, addr = self.server.accept()
+            if len(self.clients_list) >= MAXIMUM_CONNECTION:
+                client.send(bytes("OVERFLOW", "utf8"))
+                client.close()
+                continue
+            client.send(bytes("OK", "utf8"))
             self.clients_list[client] = addr
             self.update_logs(Server.get_message(addr, msg = "CONNECTED TO SERVER"))
             Thread(target = self.handle_client, args = (client, addr, )).start()

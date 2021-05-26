@@ -111,6 +111,11 @@ class RootView(tk.Tk):
 
         try:
             self._socket.connect((ip, 54321))
+            helo_message = self._socket.receive().decode("utf8")
+            if helo_message == "OVERFLOW":
+                self._socket.close()
+                self._socket = MySocket(AF_INET, SOCK_STREAM)
+                raise
             messagebox("Accepted", "Connected to the library", "info")
             self.show_frame("Login")
         except:
