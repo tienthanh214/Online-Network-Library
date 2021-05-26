@@ -57,7 +57,7 @@ class Search(tk.Frame):
     def show_result(self, table):
         self.clear_result()
         if len(table) == 0:
-            table = [["No result"] * 5] * 3
+            table = [["No result"] * 5]
         for row in table:
             self.tbl_result.insert("", "end", values=row)
 
