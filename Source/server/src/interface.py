@@ -1,7 +1,3 @@
-import sys
-from tkinter.constants import Y
-# sys.path.insert(0, '../../utility')
-from src.mysocket import *
 import time
 import pickle
 import tkinter as tk
@@ -9,7 +5,7 @@ from threading import Thread
 import tkinter.scrolledtext as tkst
 from src.database import DataBase
 from src.manager import Manager
-import time
+from src.mysocket import *
 
 MAXIMUM_CONNECTION = 10
 
@@ -68,7 +64,6 @@ class Server:
         for client in self.clients_list:
             client.close()
             self.update_logs(Server.get_message(self.clients_list[client], msg = "QUIT command from Server"))
-
         del self.clients_list
         self.clients_list = {}
 
@@ -161,11 +156,11 @@ class Server:
                             self.update_logs(Server.get_message(addr, USER, "READ BOOK with ID = " + cmd[1] + " but book not found"))
 
                     elif cmd[0] == 'LOGOUT':
-                        self.update_logs(Server.get_message(addr, USER, " has LOGGED OUT"))
+                        self.update_logs(Server.get_message(addr, USER, "has LOGGED OUT"))
                         USER = None
                     
                     elif cmd[0] == 'DOWNLOAD':
-                        self.update_logs(Server.get_message(addr, USER, " DOWNLOAD BOOK with ID = " + cmd[1]))
+                        self.update_logs(Server.get_message(addr, USER, "DOWNLOAD BOOK with ID = " + cmd[1]))
                 pass
             pass
         pass
