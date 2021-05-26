@@ -1,0 +1,51 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define fs first
+#define sc second
+
+typedef pair <int, int> II;
+const int N = 1E5 + 10;
+
+vector <II> adj[N];
+int n, m;
+int d[N];
+
+void Read_Input() {
+    //freopen("", "r", stdin);
+    //freopen("", "w", stdout);
+    scanf("%d %d", &n, &m);
+    for (int i = 1; i <= m; i++) {
+        int u, v, w;
+        scanf("%d %d %d", &u, &v, &w);
+        adj[u].push_back(II(v, w));
+        adj[v].push_back(II(u, w));
+    }
+}
+
+void BFS(int s, int t) {
+    queue <int> Q;
+    memset(d, 0, sizeof(d));
+    Q.push(s); d[s] = 1;
+    while (Q.size()) {
+        int u = Q.front();
+        Q.pop();
+        if (u == t) break;
+        for (int i = 0; i < adj[u].size(); i++) {
+            int v = adj[u][i].fs;
+            int w = adj[u][i].sc;
+            if (d[v] == 0) {
+                d[v] = d[u] + 1;
+                Q.push(v);
+            }
+        }
+    }
+    printf("%d", d[t]);
+}
+
+int main() {
+    Read_Input();
+    BFS(1, n);
+    return 0;
+}
