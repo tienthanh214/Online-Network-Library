@@ -49,7 +49,6 @@ class Manager:
     
     def create_input_box(self):
         self.input_box = tk.Toplevel(self.manager)
-        self.input_box.title("Insert book")
         self.input_box.lbl_notice = tk.Label(self.input_box, text = "", font = "Consolas 14")
         self.input_box.lbl = [None] * len(self.cols_book)
         self.input_box.ety = [None] * len(self.cols_book)
@@ -81,6 +80,7 @@ class Manager:
         self.manager.btn_insert.config(state = 'disable')
         self.manager.btn_update.config(state = 'disable')
         self.create_input_box()
+        self.input_box.title("Insert book")
         def quit_win():
             self.input_box.destroy()
             self.manager.btn_insert.config(state = 'normal')
@@ -91,6 +91,7 @@ class Manager:
         self.manager.btn_insert.config(state = 'disable')
         self.manager.btn_update.config(state = 'disable')
         self.create_input_box()
+        self.input_box.title("Update book")
         self.input_box.btn_insert.configure(text = "UPDATE BOOK", command = self.on_update)
         self.input_box.btn_clear.configure(text = "DELETE BOOK", command = self.on_delete)
         self.input_box.ety[0].configure(width = 52)

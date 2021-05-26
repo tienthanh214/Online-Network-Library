@@ -1,7 +1,7 @@
 import sqlite3
 
 class DataBase:
-    def __init__(self, link = 'src/library.db'):
+    def __init__(self, link = 'assets/library.db'):
         self.link = link
         self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()

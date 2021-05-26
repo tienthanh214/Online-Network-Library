@@ -144,13 +144,13 @@ class Server:
                         result = pickle.dumps(self.db.book_query(cmd[1]))
                         client.send(result)
                         self.update_logs(Server.get_message(addr, USER, msg))
-                        self.update_logs(Server.get_message("SERVER", msg = "send search result for " + str(addr)))
+                        self.update_logs(Server.get_message("SERVER", msg = "send search result to " + str(addr)))
                         
                     elif cmd[0] == 'BOOK':
                         try:
                             client.send(bytes(self.db.get_book(cmd[1]), "utf8"))
                             self.update_logs(Server.get_message(addr, USER, "READ BOOK with ID = " + cmd[1]))
-                            self.update_logs(Server.get_message("SERVER", msg = "send book for " + str(addr)))
+                            self.update_logs(Server.get_message("SERVER", msg = "send book to " + str(addr)))
                         except FileNotFoundError:
                             client.send(bytes("Book not available", "utf8"))
                             self.update_logs(Server.get_message(addr, USER, "READ BOOK with ID = " + cmd[1] + " but book not found"))
