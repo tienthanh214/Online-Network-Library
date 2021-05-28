@@ -21,9 +21,9 @@ __Link task: https://docs.google.com/document/d/112bVXlY76jDx6ycO_rqKQhqj19AS6U6
 ## Usage
 Just run ```server.exe``` for Server GUI and ```client.exe``` for Client GUI in [Release](Release) folder
 
-Or go to folder [source/server](source/server) and run command ```python server.exe``` to open Server
+Or go to folder [source/server](Source/server) and run command ```python server.exe``` to open Server
 
-go to folder [source/client](source/client) and run command ```python client.exe``` to open Client
+go to folder [source/client](Source/client) and run command ```python client.exe``` to open Client
 
 
 
