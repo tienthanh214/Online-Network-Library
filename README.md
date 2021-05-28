@@ -1,8 +1,30 @@
-# Đồ án thực hành mạng máy tính
-* Lê Công Bình - 19120176
-* Nguyễn Đăng Tiến Thành - 19120046
+# Online Library
+A client-server application for networking library. 
 
-# Đề 1: Online Library
-*Chương trình mô phỏng ứng dụng thư viện trực tuyến gồm một server và nhiều client. Server sẽ lưu trữ thông tin sách giúp client có thể xem và tải về. Mọi quá trình truyền file cũng như mọi thông báo (client đăng nhập, client đăng xuất) đều được thể hiện trên màn hình của server.*
+One server and multiple clients
 
-__Link: https://docs.google.com/document/d/112bVXlY76jDx6ycO_rqKQhqj19AS6U6eDC-gxFMqs5Q/edit#__
+-------------------------------------
+HCMUS Computer Network Project
+
+__Link task: https://docs.google.com/document/d/112bVXlY76jDx6ycO_rqKQhqj19AS6U6eDC-gxFMqs5Q/edit#__
+
+## Authors:
+👶 **Lê Công Bình - 19120176**
+- Github: [@binhlecong](https://github.com/binhlecong)
+
+🧑 **Nguyễn Đăng Tiến Thành - 19120036**
+- Github: [@tienthanh214](https://github.com/tienthanh214)
+
+## Install
+``` git clone git@github.com:binhlecong/socket-library.git ```
+
+## Usage
+Just run ```server.exe``` for Server GUI and ```client.exe``` for Client GUI in [Release](Release) folder
+
+Or go to folder [source/server](source/server) and run command ```python server.exe``` to open Server
+
+go to folder [source/client](source/client) and run command ```python client.exe``` to open Client
+
+
+
+
