@@ -136,6 +136,9 @@ class Manager:
                 if (len(entry_text) > 5):
                     self.input_box.lbl_notice.configure(text = "Please enter Book ID no more than 5 character\n(ex: CS001, 12345,...)")
                     return
+                if not entry_text.isalnum():
+                    self.input_box.lbl_notice.configure(text = "Please enter Book ID contains only [A-z][0-9] character")
+                    return
                 entry_text = entry_text.upper()
             if (col == "Link"):
                 entry_text = entry_text.replace('\\', '/')
@@ -161,6 +164,7 @@ class Manager:
             return
         else: # if click on GET BOOK
             ID = self.input_box.ety[0].get()
+            if not ID.isalnum(): return
             book = self.db.get_one_book(ID)
             if not book: return
             book = book[0]

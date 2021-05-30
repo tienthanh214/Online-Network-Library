@@ -130,6 +130,8 @@ class RootView(tk.Tk):
                 raise ValueError("username")
             if pas.strip(' ') == "":
                 raise ValueError("password")
+            if not usr.isalnum():
+                raise ValueError("username contains only [A-z][0-9] character")
         except ValueError as ve:
             messagebox("Invalid input", "Please enter your " + str(ve), "warn")
             return
@@ -159,6 +161,8 @@ class RootView(tk.Tk):
         try:
             if usr.strip(' ') == "":
                 raise ValueError("username")
+            if not usr.isalnum():
+                raise ValueError("username contains only [A-z][0-9] character")
             if pas.strip(' ') == "":
                 raise ValueError("password")
             if chk.strip(' ') == "":
