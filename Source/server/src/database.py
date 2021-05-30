@@ -142,7 +142,7 @@ class DataBase:
     def delete_one_book(self, ID):
         self.conn = sqlite3.connect(self.link)
         self.cur = self.conn.cursor()
-        self.cur.execute("""DELETE FROM BOOK WHERE ID = '%s'""" % ID.upper().replace("\\", "''"))
+        self.cur.execute("""DELETE FROM BOOK WHERE ID = '%s'""" % ID.upper())
         self.conn.commit()
         self.cur.close()
         self.conn.close()
