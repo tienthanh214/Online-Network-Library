@@ -9,10 +9,10 @@ HCMUS Computer Network Project
 __Link task: https://docs.google.com/document/d/112bVXlY76jDx6ycO_rqKQhqj19AS6U6eDC-gxFMqs5Q/edit#__
 
 ## Authors:
-👶 **Lê Công Bình - 19120176**
+👶 **Lê Công Bình**
 - Github: [@binhlecong](https://github.com/binhlecong)
 
-🧑 **Nguyễn Đăng Tiến Thành - 19120036**
+🧑 **Nguyễn Đăng Tiến Thành**
 - Github: [@tienthanh214](https://github.com/tienthanh214)
 
 ## Install
